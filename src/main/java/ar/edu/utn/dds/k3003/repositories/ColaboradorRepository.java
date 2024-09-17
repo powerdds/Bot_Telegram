@@ -2,6 +2,7 @@ package ar.edu.utn.dds.k3003.repositories;
 
 import ar.edu.utn.dds.k3003.model.Colaborador;
 
+import javax.persistence.EntityManagerFactory;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicLong;
 
@@ -9,7 +10,7 @@ public class ColaboradorRepository {
     private static AtomicLong seqId = new AtomicLong();
     private Collection<Colaborador> colaboradores;
 
-    public ColaboradorRepository() {
+    public ColaboradorRepository(EntityManagerFactory entityManagerFactory) {
         this.colaboradores = new ArrayList<>();
     }
 

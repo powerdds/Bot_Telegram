@@ -15,16 +15,15 @@ import java.util.TimeZone;
 import ar.edu.utn.dds.k3003.facades.dtos.Constants;
 public class WebApp {
   public static void main(String[] args) {
-    var fachada = new Fachada();
+    var fachadaViandas = new FachadaViandasPrincipal();
+    var fachadaColaboradores = new FachadaColaboradoresPrincipal();
+    var fachadaLogistica = new FachadaLogisticaPrincipal();
+    var fachadaHeladeras = new FachadaHeladerasPrincipal();
+
     var objectMapper = createObjectMapper();
 
     Integer port = Integer.parseInt(System.getProperty("port","8080"));
     Javalin app = Javalin.create().start(port);
-
-    var URL_VIANDAS = System.getenv().get("URL_VIANDAS");
-    var URL_LOGISTICA = System.getenv().get("URL_LOGISTICA");
-    var URL_HELADERAS = System.getenv().get("URL_HELADERAS");
-    var URL_COLABORADORES = System.getenv().get("URL_COLABORADORES");
 
     var viandaController = new ViandaController(fachada);
     fachada.setHeladerasProxy(new HeladerasProxy(objectMapper));

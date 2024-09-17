@@ -27,12 +27,6 @@ public class FachadaHeladerasPrincipal implements ar.edu.utn.dds.k3003.facades.F
   this.temperaturaRepository=new TemperaturaRepository();
   this.temperaturaMapper=new TemperaturaMapper();
  }
-    public FachadaHeladerasPrincial(HeladerasRepository heladerasRepository, HeladeraMapper heladeraMapper, TemperaturaRepository temperaturaRepository, TemperaturaMapper temperaturaMapper) {
-        this.heladerasRepository = heladerasRepository;
-        this.heladeraMapper = heladeraMapper;
-        this.temperaturaRepository = temperaturaRepository;
-        this.temperaturaMapper = temperaturaMapper;
-    }
 
     @Override public HeladeraDTO agregar(HeladeraDTO heladeraDTO){
     Heladera heladera= new Heladera(heladeraDTO.getNombre());

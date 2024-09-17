@@ -6,8 +6,6 @@ import ar.edu.utn.dds.k3003.facades.dtos.*;
 import ar.edu.utn.dds.k3003.facades.exceptions.TrasladoNoAsignableException;
 import ar.edu.utn.dds.k3003.complementos.Ruta;
 import ar.edu.utn.dds.k3003.complementos.Traslado;
-import ar.edu.utn.dds.k3003.fachadas.FachadaHeladerasImp;
-import ar.edu.utn.dds.k3003.fachadas.FachadaViandasImp;
 import ar.edu.utn.dds.k3003.repositories.RutaMapper;
 import ar.edu.utn.dds.k3003.repositories.RutaRepository;
 import ar.edu.utn.dds.k3003.repositories.TrasladoMapper;
@@ -33,14 +31,14 @@ public class FachadaLogisticaPrincipal implements ar.edu.utn.dds.k3003.facades.F
     private FachadaViandas fachadaViandas;
     private FachadaHeladeras fachadaHeladeras;
 
-
+/*
     public FachadaLogisticaPrincipal(EntityManagerFactory entityManagerFactory){
         this.entityManagerFactory = entityManagerFactory;
         this.rutaRepository = new RutaRepository();
         this.rutaMapper = new RutaMapper();
         this.trasladoMapper = new TrasladoMapper();
         this.trasladoRepository = new TrasladoRepository();
-    }
+    }*/
     public FachadaLogisticaPrincipal(){
         this.rutaRepository = new RutaRepository();
         this.rutaMapper = new RutaMapper();

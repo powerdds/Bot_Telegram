@@ -9,7 +9,6 @@ import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import ar.edu.utn.dds.k3003.model.Colaborador;
 import ar.edu.utn.dds.k3003.repositories.ColaboradorMapper;
 //import ar.edu.utn.dds.k3003.repositories.ColaboradorRepository;
-import ar.edu.utn.dds.k3003.persist.ColaboradorRepository; //revisar
 import ar.edu.utn.dds.k3003.repositories.ColaboradorRepository;
 
 import javax.persistence.EntityManagerFactory;
@@ -26,11 +25,15 @@ public class FachadaColaboradoresPrincipal implements ar.edu.utn.dds.k3003.facad
     private FachadaViandas fachadaViandas;
     private FachadaLogistica fachadaLogistica;
 
+    public FachadaColaboradoresPrincipal() {
+
+    }
+/*
     public FachadaColaboradoresPrincipal(EntityManagerFactory entityManagerFactory) {
         this.colaboradorRepository = new ColaboradorRepository(entityManagerFactory);
         this.colaboradorMapper = new ColaboradorMapper();
     }
-
+*/
     @Override
     public ColaboradorDTO agregar(ColaboradorDTO colaboradorDto) {
         Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas());
@@ -87,7 +90,7 @@ public class FachadaColaboradoresPrincipal implements ar.edu.utn.dds.k3003.facad
     @Override
     public ColaboradorDTO modificar(Long colaboradorId, List<FormaDeColaborarEnum> formaDeColaborar){
         ColaboradorDTO colaborador = buscarXId(colaboradorId);
-        colaboradorRepository.remove(colaboradorId);
+        colaboradorRepository.remover(colaboradorId);
         ColaboradorDTO colaboradorCambiado = new ColaboradorDTO(colaborador.getNombre(), formaDeColaborar);
         colaboradorCambiado.setId(colaboradorId);
         return agregarConID(colaboradorCambiado,colaboradorId);

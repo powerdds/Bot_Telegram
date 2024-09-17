@@ -1,6 +1,7 @@
 package ar.edu.utn.dds.k3003.controller;
 
 import ar.edu.utn.dds.k3003.app.Fachada;
+import ar.edu.utn.dds.k3003.app.FachadaViandasPrincipal;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import ar.edu.utn.dds.k3003.model.HeladeraDestino;
@@ -9,9 +10,9 @@ import io.javalin.http.HttpStatus;
 import io.javalin.http.Context;
 
 public class ViandaController {
-  private final Fachada fachada;
+  private final FachadaViandasPrincipal fachada;
 
-  public ViandaController(Fachada fachada){
+  public ViandaController(FachadaViandasPrincipal fachada){
     this.fachada = fachada;
   }
 
