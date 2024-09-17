@@ -1,4 +1,4 @@
-package ar.edu.utn.dds.k3003.clientes;
+package ar.edu.utn.dds.k3003.clients;
 
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;

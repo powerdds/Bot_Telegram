@@ -1,4 +1,5 @@
 package ar.edu.utn.dds.k3003.app;
+import ar.edu.utn.dds.k3003.clients.ViandasProxy;
 import ar.edu.utn.dds.k3003.clients.HeladerasProxy;
 import ar.edu.utn.dds.k3003.controller.ViandaController;
 import ar.edu.utn.dds.k3003.model.Vianda;
@@ -28,7 +29,7 @@ public class WebApp {
     var viandaController = new ViandaController(fachada);
     fachada.setHeladerasProxy(new HeladerasProxy(objectMapper));
     fachada.setViandasProxy(new ViandasProxy(objectMapper));//pruebas locales
-    var heladeraController=new HeladeraController(fachada);
+    var heladeraController=new heladeraController);
     var temperaturaController=new TemperaturaController(fachada);
 
     app.post("/viandas",viandaController::agregar);
@@ -45,6 +46,12 @@ public class WebApp {
     app.post("/depositos",heladeraController::depositar);
     app.post("/retiros",heladeraController::retirar);
     app.get("/cleanup",heladeraController::cleanup);
+    app.post("/rutas", rutaController::agregar);
+    app.post("/traslados", trasladosController::asignar);
+    app.get("/traslados/search/findByColaboradorId", trasladosController::trasladosColaborador);
+    app.get("/traslados/{id}", trasladosController::obtener);
+    app.patch("/traslados/{id}", trasladosController::cambiarEstado);
+    app.delete("/cleanup" , dbController::eliminarDB);
   }
 
   public static ObjectMapper createObjectMapper() {
