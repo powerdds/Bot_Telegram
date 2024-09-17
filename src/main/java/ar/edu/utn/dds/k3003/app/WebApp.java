@@ -19,8 +19,17 @@ public class WebApp {
 
     Integer port = Integer.parseInt(System.getProperty("port","8080"));
     Javalin app = Javalin.create().start(port);
+
+    var URL_VIANDAS = System.getenv().get("URL_VIANDAS");
+    var URL_LOGISTICA = System.getenv().get("URL_LOGISTICA");
+    var URL_HELADERAS = System.getenv().get("URL_HELADERAS");
+    var URL_COLABORADORES = System.getenv().get("URL_COLABORADORES");
+
     var viandaController = new ViandaController(fachada);
     fachada.setHeladerasProxy(new HeladerasProxy(objectMapper));
+    fachada.setViandasProxy(new ViandasProxy(objectMapper));//pruebas locales
+    var heladeraController=new HeladeraController(fachada);
+    var temperaturaController=new TemperaturaController(fachada);
 
     app.post("/viandas",viandaController::agregar);
     app.get("/viandas",viandaController::listar);
@@ -29,6 +38,13 @@ public class WebApp {
     app.get("/viandas/{qr}/vencida",viandaController::verificarVencimiento);
     app.patch("/viandas/{qr}",viandaController::modificarHeladera);
     app.patch("/viandas/{qr}/estado",viandaController::modificarEstado);
+    app.post("/heladeras",heladeraController::agregar);
+    app.get("/heladeras/{id}",heladeraController::obtener);
+    app.post("/temperaturas",temperaturaController::agregar);
+    app.get("/heladeras/{id}/temperaturas",temperaturaController::obtener);
+    app.post("/depositos",heladeraController::depositar);
+    app.post("/retiros",heladeraController::retirar);
+    app.get("/cleanup",heladeraController::cleanup);
   }
 
   public static ObjectMapper createObjectMapper() {
