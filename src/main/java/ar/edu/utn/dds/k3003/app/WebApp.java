@@ -52,6 +52,13 @@ public class WebApp {
     app.get("/traslados/{id}", trasladosController::obtener);
     app.patch("/traslados/{id}", trasladosController::cambiarEstado);
     app.delete("/cleanup" , dbController::eliminarDB);
+    app.post("/colaboradores", colaboradorController::agregar);
+    app.get("/colaboradores/{id}", colaboradorController::obtener);
+    app.patch("/colaboradores/{id}",colaboradorController::modificar);
+    app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
+    app.put("/formula", colaboradorController::actualizarPuntos);
+    app.post("/colaboradores/prueba", colaboradorController::prueba);
+    app.delete("/cleanup",colaboradorController::clean);
   }
 
   public static ObjectMapper createObjectMapper() {

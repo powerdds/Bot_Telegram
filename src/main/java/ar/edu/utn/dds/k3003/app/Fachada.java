@@ -1,9 +1,12 @@
 package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
+import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
+import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoTrasladoEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
+import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RutaDTO;
@@ -39,13 +42,25 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaViandas{
   private final RutaMapper rutaMapper;
   private final TrasladoRepository trasladoRepository;
   private final TrasladoMapper trasladoMapper;
+  public final ColaboradorRepository colaboradorRepository;
+  private final ColaboradorMapper colaboradorMapper;
+  private Double pesosDonadosPeso;
+  private Double viandasDistribuidasPeso;
+  private Double viandasDonadasPeso;
+  private Double tarjetasRepartidasPeso;
+  private Double heladerasActivasPeso;
+  private FachadaViandas fachadaViandas;
+  private FachadaLogistica fachadaLogistica;
 
   public Fachada() {
-    this.heladerasRepository = new HeladerasRepository();
+ /*   this.heladerasRepository = new HeladerasRepository();
     this.heladeraMapper = new HeladeraMapper();
     this.temperaturaRepository=new TemperaturaRepository();
     this.temperaturaMapper=new TemperaturaMapper();
+    this.colaboradorRepository = new ColaboradorRepository(entityManagerFactory);
+    this.colaboradorMapper = new ColaboradorMapper();*/
   }
+  /*
   public Fachada(HeladerasRepository heladerasRepository, HeladeraMapper heladeraMapper, TemperaturaRepository temperaturaRepository, TemperaturaMapper temperaturaMapper) {
     this.heladerasRepository = heladerasRepository;
     this.heladeraMapper = heladeraMapper;
@@ -56,7 +71,7 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaViandas{
     this.trasladoMapper = new TrasladoMapper();
     this.trasladoRepository = new TrasladoRepository();
   }
-
+*/
 
   @Override
   public ViandaDTO agregar(ViandaDTO viandaDTO) throws NoSuchElementException {
@@ -321,6 +336,77 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaViandas{
   public void setViandasProxy(FachadaViandas fachadaViandas){
     this.fachadaViandas = fachadaViandas;
   }
+  @Override
+  public ColaboradorDTO agregar(ColaboradorDTO colaboradorDto) {
+    Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas());
+    colaborador = this.colaboradorRepository.save(colaborador);
+    return colaboradorMapper.map(colaborador);
+  }
+  public ColaboradorDTO agregarConID(ColaboradorDTO colaboradorDto, Long id) {
+    Colaborador colaborador = new Colaborador(colaboradorDto.getNombre() , colaboradorDto.getFormas());
+    colaborador.setId(id);
+    colaborador = this.colaboradorRepository.save(colaborador);
+    return colaboradorMapper.map(colaborador);
+  }
+
+  @Override
+  public ColaboradorDTO buscarXId(Long colaboradorId) {
+    Colaborador colaborador = colaboradorRepository.findById(colaboradorId);
+    return colaboradorMapper.map(colaborador);
+  }
+
+  @Override
+  public void actualizarPesosPuntos(Double pesosDonados , Double viandasDistribuidas, Double viandasDonadas,
+                                    Double tarjetasRepartidas, Double heladerasActivas){
+    //dejar como antes, que se encargue la fachada y testear
+        /*this.puntosCalculo = new PuntosBody(pesosDonados,
+                viandasDistribuidas,
+                viandasDonadas,
+                tarjetasRepartidas,
+                heladerasActivas);
+        this.puntosCalculo.setPesosDonados(pesosDonados);
+        this.puntosCalculo.setViandasDistribuidas(viandasDistribuidas);
+        this.puntosCalculo.setViandasDonadas(viandasDonadas);
+        this.puntosCalculo.setTarjetasRepartidas(tarjetasRepartidas);
+        this.puntosCalculo.setHeladerasActivas(heladerasActivas);
+        puntosRepository.save(puntosCalculo);*/
+    pesosDonadosPeso = pesosDonados;
+    viandasDistribuidasPeso = viandasDistribuidas;
+    viandasDonadasPeso =viandasDonadas;
+    tarjetasRepartidasPeso = tarjetasRepartidas;
+    heladerasActivasPeso = heladerasActivas;
+  }
+  @Override
+  public Double puntos(Long colaboradorId){// Calcular puntos
+    return viandasDistribuidas(colaboradorId) * viandasDistribuidasPeso +
+        viandasDonadas(colaboradorId) * viandasDonadasPeso;}
+
+  public Long viandasDonadas(Long colaboradorId){
+    List<ViandaDTO> viandas =  fachadaViandas.viandasDeColaborador(colaboradorId,6,2024);
+    return (long) viandas.size();
+  }
+  public Long viandasDistribuidas(Long colaboradorId){
+    List<TrasladoDTO> traslados =  fachadaLogistica.trasladosDeColaborador(colaboradorId,6,2024);
+    return (long) traslados.size();
+  }
+  @Override
+  public ColaboradorDTO modificar(Long colaboradorId, List<FormaDeColaborarEnum> formaDeColaborar){
+    ColaboradorDTO colaborador = buscarXId(colaboradorId);
+    colaboradorRepository.remove(colaboradorId);
+    ColaboradorDTO colaboradorCambiado = new ColaboradorDTO(colaborador.getNombre(), formaDeColaborar);
+    colaboradorCambiado.setId(colaboradorId);
+    return agregarConID(colaboradorCambiado,colaboradorId);
+  }
+
+  @Override
+  public void setLogisticaProxy(FachadaLogistica fachadaLogistica) {
+    this.fachadaLogistica = fachadaLogistica;
+  }
+
+  @Override
+  public void setViandasProxy(FachadaViandas fachadaViandas) {
+    this.fachadaViandas = fachadaViandas;
+  }
 
   public boolean clean() {
     temperaturaRepository.findAll().forEach(temperaturaRepository::delete);
@@ -330,4 +416,5 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaViandas{
 
     return false;
   }
+
 }
