@@ -1,9 +1,11 @@
 package ar.edu.utn.dds.k3003.app;
-import ar.edu.utn.dds.k3003.clients.ViandasProxy;
-import ar.edu.utn.dds.k3003.clients.HeladerasProxy;
+
+import ar.edu.utn.dds.k3003.controller.ColaboradorController;
+import ar.edu.utn.dds.k3003.controller.HeladeraController;
+import ar.edu.utn.dds.k3003.controller.RutaController;
+import ar.edu.utn.dds.k3003.controller.TemperaturaController;
+import ar.edu.utn.dds.k3003.controller.TrasladoController;
 import ar.edu.utn.dds.k3003.controller.ViandaController;
-import ar.edu.utn.dds.k3003.model.Vianda;
-import ar.edu.utn.dds.k3003.repositories.ViandaRepository;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -25,11 +27,12 @@ public class WebApp {
     Integer port = Integer.parseInt(System.getProperty("port","8080"));
     Javalin app = Javalin.create().start(port);
 
-    var viandaController = new ViandaController(fachada);
-    fachada.setHeladerasProxy(new HeladerasProxy(objectMapper));
-    fachada.setViandasProxy(new ViandasProxy(objectMapper));//pruebas locales
-    var heladeraController=new heladeraController);
-    var temperaturaController=new TemperaturaController(fachada);
+    var viandaController = new ViandaController(fachadaViandas);
+    var heladeraController= new HeladeraController(fachadaHeladeras);
+    var temperaturaController = new TemperaturaController(fachadaHeladeras);
+    var trasladosController = new TrasladoController(fachadaLogistica);
+    var rutaController = new RutaController(fachadaLogistica);
+    var colaboradorController = new ColaboradorController(fachadaColaboradores);
 
     app.post("/viandas",viandaController::agregar);
     app.get("/viandas",viandaController::listar);
@@ -38,6 +41,7 @@ public class WebApp {
     app.get("/viandas/{qr}/vencida",viandaController::verificarVencimiento);
     app.patch("/viandas/{qr}",viandaController::modificarHeladera);
     app.patch("/viandas/{qr}/estado",viandaController::modificarEstado);
+    /*------------------------------------------------*/
     app.post("/heladeras",heladeraController::agregar);
     app.get("/heladeras/{id}",heladeraController::obtener);
     app.post("/temperaturas",temperaturaController::agregar);
@@ -45,12 +49,14 @@ public class WebApp {
     app.post("/depositos",heladeraController::depositar);
     app.post("/retiros",heladeraController::retirar);
     app.get("/cleanup",heladeraController::cleanup);
+    /*------------------------------------------------*/
     app.post("/rutas", rutaController::agregar);
     app.post("/traslados", trasladosController::asignar);
     app.get("/traslados/search/findByColaboradorId", trasladosController::trasladosColaborador);
     app.get("/traslados/{id}", trasladosController::obtener);
     app.patch("/traslados/{id}", trasladosController::cambiarEstado);
-    app.delete("/cleanup" , dbController::eliminarDB);
+    //app.delete("/cleanup" , dbController::eliminarDB);
+    /*------------------------------------------------*/
     app.post("/colaboradores", colaboradorController::agregar);
     app.get("/colaboradores/{id}", colaboradorController::obtener);
     app.patch("/colaboradores/{id}",colaboradorController::modificar);

@@ -1,6 +1,5 @@
-package ar.edu.utn.dds.k3003.controladores;
+package ar.edu.utn.dds.k3003.controller;
 
-import ar.edu.utn.dds.k3003.app.Fachada;
 import io.javalin.http.Context;
 
 import javax.persistence.EntityManager;

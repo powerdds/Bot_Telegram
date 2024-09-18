@@ -1,6 +1,6 @@
-package ar.edu.utn.dds.k3003.model.controller;
+package ar.edu.utn.dds.k3003.controller;
 
-import ar.edu.utn.dds.k3003.app.Fachada;
+import ar.edu.utn.dds.k3003.app.FachadaHeladerasPrincipal;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
@@ -10,10 +10,11 @@ import java.util.NoSuchElementException;
 
 public class HeladeraController {
 
-    Fachada fachada;
+    private FachadaHeladerasPrincipal fachada;
 
-    public HeladeraController(Fachada fachadaHeladera) {
-        this.fachada =fachadaHeladera;
+    public HeladeraController (FachadaHeladerasPrincipal fachadaHeladera) {
+
+        this.fachada = fachadaHeladera;
     }
 
     public void agregar(Context ctx) {

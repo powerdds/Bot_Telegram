@@ -1,6 +1,6 @@
-package ar.edu.utn.dds.k3003.controladores;
-
+package ar.edu.utn.dds.k3003.controller;
 import ar.edu.utn.dds.k3003.app.Fachada;
+import ar.edu.utn.dds.k3003.app.FachadaLogisticaPrincipal;
 import ar.edu.utn.dds.k3003.complementos.Traslado;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoTrasladoEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
@@ -13,9 +13,9 @@ import java.util.NoSuchElementException;
 
 public class TrasladoController {
 
-    private final Fachada fachada;
+    private final FachadaLogisticaPrincipal fachada;
 
-    public TrasladoController(Fachada fachada) {
+    public TrasladoController(FachadaLogisticaPrincipal fachada) {
         this.fachada = fachada;
     }
 

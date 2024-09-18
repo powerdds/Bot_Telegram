@@ -1,6 +1,6 @@
-package ar.edu.utn.dds.k3003.controladores;
+package ar.edu.utn.dds.k3003.controller;
 
-import ar.edu.utn.dds.k3003.app.Fachada;
+import ar.edu.utn.dds.k3003.app.FachadaLogisticaPrincipal;
 import ar.edu.utn.dds.k3003.facades.dtos.RutaDTO;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
@@ -11,9 +11,9 @@ import javax.persistence.EntityManagerFactory;
 public class RutaController {
 
     private EntityManagerFactory entityManagerFactory;
-    private final Fachada fachada;
+    private FachadaLogisticaPrincipal fachada;
 
-    public RutaController(Fachada fachada) {
+    public RutaController(FachadaLogisticaPrincipal fachada) {
         this.fachada = fachada;
     }
 
