@@ -34,12 +34,16 @@ public class FachadaHeladerasPrincipal implements ar.edu.utn.dds.k3003.facades.F
     return heladeraMapper.map(heladera);
     }
 
-    @Override public void depositar(Integer heladeraId, String qrVianda) throws NoSuchElementException{
+    @Override public void depositar(Integer heladeraId, String qrVianda) throws NoSuchElementException {
         Heladera heladera = this.heladerasRepository.findById(Long.valueOf(heladeraId))
                 .orElseThrow(() -> new NoSuchElementException("Heladera no encontrada id: " + heladeraId));
-      this.fachadaViandas.buscarXQR(qrVianda);
+        if(this.fachadaViandas.buscarXQR(qrVianda).getEstado()!=EstadoViandaEnum.PREPARADA
+            && this.fachadaViandas.buscarXQR(qrVianda).getEstado()!=EstadoViandaEnum.EN_TRASLADO){
+          throw new RuntimeException("La Vianda "+qrVianda+ " no esta preparada ni en traslado, no se puede depositar");
+        }
         fachadaViandas.modificarEstado(qrVianda, EstadoViandaEnum.DEPOSITADA);
-      heladera.depositarVianda(qrVianda);
+        fachadaViandas.modificarHeladera(qrVianda,heladeraId);
+        heladera.depositarVianda(qrVianda);
       this.heladerasRepository.update(heladera);
 
     }
@@ -53,9 +57,15 @@ public class FachadaHeladerasPrincipal implements ar.edu.utn.dds.k3003.facades.F
     @Override public void retirar(RetiroDTO retiro) throws NoSuchElementException{
         Heladera heladera = this.heladerasRepository.findById(Long.valueOf(retiro.getHeladeraId()))
                 .orElseThrow(() -> new NoSuchElementException("Heladera no encontrada id: " + retiro.getHeladeraId()));
-        this.fachadaViandas.buscarXQR(retiro.getQrVianda());
+        if(this.fachadaViandas.buscarXQR(retiro.getQrVianda()).getEstado()!=EstadoViandaEnum.DEPOSITADA){
+            throw new RuntimeException("La Vianda "+retiro.getQrVianda()+ " no esta depositada, no se puede retirar");
+        }
+        if(this.fachadaViandas.buscarXQR(retiro.getQrVianda()).getHeladeraId()!=retiro.getHeladeraId()){//la heladera de la que se quiere retirar la vianda es la heladera en la que realmente esta la vianda
+            throw new RuntimeException("La Vianda "+retiro.getQrVianda()+ " no esta depositada en esta heladera "+retiro.getHeladeraId());
+        }
         fachadaViandas.modificarEstado(retiro.getQrVianda(), EstadoViandaEnum.RETIRADA);
-        try {
+        fachadaViandas.modificarHeladera(retiro.getQrVianda(),0);//revisar TODO tiene que aceptar valor null de heladera
+          try {
             heladera.retirarVianda();
             this.heladerasRepository.update(heladera);
         } catch (Exception e) {
