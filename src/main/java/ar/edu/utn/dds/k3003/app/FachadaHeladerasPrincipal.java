@@ -21,7 +21,7 @@ public class FachadaHeladerasPrincipal implements ar.edu.utn.dds.k3003.facades.F
  private TemperaturaMapper temperaturaMapper;
  private FachadaViandas fachadaViandas;
 
- public void FachadaHeladerasPrincial() {
+ public void FachadaHeladerasPrincipal() {
   this.heladerasRepository = new HeladerasRepository();
   this.heladeraMapper = new HeladeraMapper();
   this.temperaturaRepository=new TemperaturaRepository();
