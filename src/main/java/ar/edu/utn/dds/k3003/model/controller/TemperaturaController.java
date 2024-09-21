@@ -1,16 +1,15 @@
-package ar.edu.utn.dds.k3003.controller;
+package ar.edu.utn.dds.k3003.model.controller;
 
-import ar.edu.utn.dds.k3003.app.FachadaHeladerasPrincipal;
+import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.TemperaturaDTO;
 import io.javalin.http.Context;
 
 import java.util.NoSuchElementException;
 
 public class TemperaturaController {
-    private FachadaHeladerasPrincipal fachada;
+    Fachada fachada=new Fachada();
 
-    public TemperaturaController(FachadaHeladerasPrincipal fachada) {
-
+    public TemperaturaController(Fachada fachada) {
         this.fachada = fachada;
     }
 

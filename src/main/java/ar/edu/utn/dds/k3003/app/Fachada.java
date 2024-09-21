@@ -1,5 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.*;
 import ar.edu.utn.dds.k3003.model.Heladera;
@@ -13,20 +14,26 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
-public class FachadaHeladerasPrincipal implements ar.edu.utn.dds.k3003.facades.FachadaHeladeras {
+public class Fachada implements FachadaHeladeras {
 
- private HeladerasRepository heladerasRepository;
- private HeladeraMapper heladeraMapper;
- private TemperaturaRepository temperaturaRepository;
- private TemperaturaMapper temperaturaMapper;
+ private final HeladerasRepository heladerasRepository;
+ private final HeladeraMapper heladeraMapper;
+ private final TemperaturaRepository temperaturaRepository;
+ private final TemperaturaMapper temperaturaMapper;
  private FachadaViandas fachadaViandas;
 
- public void FachadaHeladerasPrincipal() {
+ public Fachada() {
   this.heladerasRepository = new HeladerasRepository();
   this.heladeraMapper = new HeladeraMapper();
   this.temperaturaRepository=new TemperaturaRepository();
   this.temperaturaMapper=new TemperaturaMapper();
  }
+    public Fachada(HeladerasRepository heladerasRepository, HeladeraMapper heladeraMapper, TemperaturaRepository temperaturaRepository, TemperaturaMapper temperaturaMapper) {
+        this.heladerasRepository = heladerasRepository;
+        this.heladeraMapper = heladeraMapper;
+        this.temperaturaRepository = temperaturaRepository;
+        this.temperaturaMapper = temperaturaMapper;
+    }
 
     @Override public HeladeraDTO agregar(HeladeraDTO heladeraDTO){
     Heladera heladera= new Heladera(heladeraDTO.getNombre());
@@ -37,14 +44,17 @@ public class FachadaHeladerasPrincipal implements ar.edu.utn.dds.k3003.facades.F
     @Override public void depositar(Integer heladeraId, String qrVianda) throws NoSuchElementException {
         Heladera heladera = this.heladerasRepository.findById(Long.valueOf(heladeraId))
                 .orElseThrow(() -> new NoSuchElementException("Heladera no encontrada id: " + heladeraId));
-        if(this.fachadaViandas.buscarXQR(qrVianda).getEstado()!=EstadoViandaEnum.PREPARADA
-            && this.fachadaViandas.buscarXQR(qrVianda).getEstado()!=EstadoViandaEnum.EN_TRASLADO){
-          throw new RuntimeException("La Vianda "+qrVianda+ " no esta preparada ni en traslado, no se puede depositar");
+       ViandaDTO vianda=this.fachadaViandas.buscarXQR(qrVianda);
+
+        if(vianda.getEstado()!=EstadoViandaEnum.PREPARADA
+                && vianda.getEstado()!=EstadoViandaEnum.EN_TRASLADO){
+            throw new RuntimeException("La Vianda "+qrVianda+ " no esta preparada ni en traslado, no se puede depositar");
         }
+        if(vianda.getEstado()==EstadoViandaEnum.PREPARADA){//evitar doble llamado con traslados
         fachadaViandas.modificarEstado(qrVianda, EstadoViandaEnum.DEPOSITADA);
-        fachadaViandas.modificarHeladera(qrVianda,heladeraId);
+        }
         heladera.depositarVianda(qrVianda);
-      this.heladerasRepository.update(heladera);
+        this.heladerasRepository.update(heladera);
 
     }
 
@@ -57,15 +67,17 @@ public class FachadaHeladerasPrincipal implements ar.edu.utn.dds.k3003.facades.F
     @Override public void retirar(RetiroDTO retiro) throws NoSuchElementException{
         Heladera heladera = this.heladerasRepository.findById(Long.valueOf(retiro.getHeladeraId()))
                 .orElseThrow(() -> new NoSuchElementException("Heladera no encontrada id: " + retiro.getHeladeraId()));
-        if(this.fachadaViandas.buscarXQR(retiro.getQrVianda()).getEstado()!=EstadoViandaEnum.DEPOSITADA){
+        ViandaDTO vianda=this.fachadaViandas.buscarXQR(retiro.getQrVianda());
+
+        if(vianda.getEstado()!=EstadoViandaEnum.DEPOSITADA){
             throw new RuntimeException("La Vianda "+retiro.getQrVianda()+ " no esta depositada, no se puede retirar");
         }
-        if(this.fachadaViandas.buscarXQR(retiro.getQrVianda()).getHeladeraId()!=retiro.getHeladeraId()){//la heladera de la que se quiere retirar la vianda es la heladera en la que realmente esta la vianda
+        if(vianda.getHeladeraId()!=retiro.getHeladeraId()){//la heladera de la que se quiere retirar la vianda es la heladera en la que realmente esta la vianda
             throw new RuntimeException("La Vianda "+retiro.getQrVianda()+ " no esta depositada en esta heladera "+retiro.getHeladeraId());
         }
         fachadaViandas.modificarEstado(retiro.getQrVianda(), EstadoViandaEnum.RETIRADA);
-        fachadaViandas.modificarHeladera(retiro.getQrVianda(),0);//revisar TODO tiene que aceptar valor null de heladera
-          try {
+        fachadaViandas.modificarHeladera(retiro.getQrVianda(),-1);
+        try {
             heladera.retirarVianda();
             this.heladerasRepository.update(heladera);
         } catch (Exception e) {

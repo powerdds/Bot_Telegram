@@ -1,8 +1,9 @@
-package ar.edu.utn.dds.k3003.clients;
+package ar.edu.utn.dds.k3003.clientes;
 
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
+import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.HttpStatus;
@@ -80,8 +81,22 @@ public class ViandasProxy implements FachadaViandas {
         return false;
     }
 
+    @SneakyThrows
     @Override
     public ViandaDTO modificarHeladera(String s, int i) {
-        return null;
+        HeladeraDTO heladeradto=new HeladeraDTO(i,null,null);
+        if(i<0){
+            heladeradto.setId(null);
+            //la vianda ya la retiraron de la heladera
+        }
+        Response<ViandaDTO> execute = service.modifHeladeraVianda(s, heladeradto).execute();
+
+        if (execute.isSuccessful()) {
+            return execute.body();
+        }
+        if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
+            throw new NoSuchElementException("no se encontro la vianda " + s);
+        }
+        throw new RuntimeException("Error conectandose con el componente viandas");
     }
 }
