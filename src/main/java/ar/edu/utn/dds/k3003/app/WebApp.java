@@ -53,6 +53,7 @@ public class WebApp {
         app.patch("/traslados/{id}", trasladosController::cambiarEstado);
        app.delete("/cleanup" , dbController::eliminarDB);
        app.post("/retirarTraslado/{id}" , trasladosController::retirarTraslado);
+       app.post("/depositarTraslado/{id}" , trasladosController::depositarTraslado);
     }
 
     //nuevo metodo

@@ -135,6 +135,9 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaLogistica {
     }
     @Override
     public void trasladoRetirado(Long trasladoId){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        trasladoRepository.setEntityManager(entityManager);
+        trasladoRepository.getEntityManager().getTransaction().begin();
         TrasladoDTO trasladoBuscado = this.buscarXId(trasladoId);
 
         Ruta rutaDeTraslado = new Ruta(trasladoBuscado.getColaboradorId(), trasladoBuscado.getHeladeraOrigen(), trasladoBuscado.getHeladeraDestino());
@@ -143,33 +146,54 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaLogistica {
 
         fachadaHeladeras.retirar(retiroDTO);
 
+        //Esto de viandas capaz va, capaz no, a checkear.
         fachadaViandas.modificarEstado(trasladoBuscado.getQrVianda(), EstadoViandaEnum.EN_TRASLADO);
 
+        trasladoRepository.getEntityManager().getTransaction().commit();
+        trasladoRepository.getEntityManager().close();
+
+        this.modificarEstadoTraslado(trasladoId, EstadoTrasladoEnum.EN_VIAJE);
+        /*
         trasladoRepository.save(new Traslado(trasladoBuscado.getQrVianda(),
                                 rutaDeTraslado,
                                 EstadoTrasladoEnum.EN_VIAJE,
                                 trasladoBuscado.getFechaTraslado()));
-
+        */
 
     }
 
     @Override
     public void trasladoDepositado(Long trasladoId){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        trasladoRepository.setEntityManager(entityManager);
+        trasladoRepository.getEntityManager().getTransaction().begin();
         TrasladoDTO trasladoTerminado = this.buscarXId(trasladoId);
+
+        if(!trasladoTerminado.getStatus().equals(EstadoTrasladoEnum.EN_VIAJE)){
+            trasladoRepository.getEntityManager().getTransaction().rollback();
+            trasladoRepository.getEntityManager().close();
+            throw new NoSuchElementException("La vianda con qr" + trasladoTerminado.getQrVianda() +" aún no fue retirada");
+        }
 
         Ruta rutaDeTraslado = new Ruta(trasladoTerminado.getColaboradorId(), trasladoTerminado.getHeladeraOrigen(), trasladoTerminado.getHeladeraDestino());
 
         fachadaHeladeras.depositar(trasladoTerminado.getHeladeraDestino(), trasladoTerminado.getQrVianda());
 
+        //Esto como en traslado retirado, podria ir, o no, a checkear.
         fachadaViandas.modificarEstado(trasladoTerminado.getQrVianda(),EstadoViandaEnum.DEPOSITADA);
 
         fachadaViandas.modificarHeladera(trasladoTerminado.getQrVianda(),trasladoTerminado.getHeladeraDestino());
-
+        trasladoRepository.getEntityManager().getTransaction().commit();
+        trasladoRepository.getEntityManager().close();
+        this.modificarEstadoTraslado(trasladoId, EstadoTrasladoEnum.ENTREGADO);
+        /*
         trasladoRepository.save(new Traslado(trasladoTerminado.getQrVianda(),
                                             rutaDeTraslado,
                                             EstadoTrasladoEnum.ENTREGADO,
                                             trasladoTerminado.getFechaTraslado()));
+    */
     }
+
 
     public void modificarEstadoTraslado(Long trasladoId, EstadoTrasladoEnum nuevoEstado) throws NoSuchElementException{
         EntityManager entityManager = entityManagerFactory.createEntityManager();
