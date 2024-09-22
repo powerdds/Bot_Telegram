@@ -9,16 +9,20 @@ import ar.edu.utn.dds.k3003.model.Vianda;
 import ar.edu.utn.dds.k3003.repositories.ViandaMapper;
 import ar.edu.utn.dds.k3003.repositories.ViandaRepository;
 import lombok.Getter;
+import javax.persistence.criteria.CriteriaBuilder;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
 
 @Getter
-public class FachadaViandasPrincipal implements ar.edu.utn.dds.k3003.facades.FachadaViandas{
+public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaViandas{
   private final ViandaMapper viandaMapper = new ViandaMapper();;
   private final ViandaRepository viandaRepository = new ViandaRepository();
   private FachadaViandas fachadaViandas;
   private FachadaHeladeras fachadaHeladeras;
-  public FachadaViandasPrincipal(){
+  public Fachada(){
 
   }
 

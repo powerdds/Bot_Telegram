@@ -1,7 +1,8 @@
 package ar.edu.utn.dds.k3003.controller;
 
-import ar.edu.utn.dds.k3003.app.FachadaViandasPrincipal;
+import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
+import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import ar.edu.utn.dds.k3003.model.HeladeraDestino;
 import ar.edu.utn.dds.k3003.model.Respuesta;
@@ -9,9 +10,9 @@ import io.javalin.http.HttpStatus;
 import io.javalin.http.Context;
 
 public class ViandaController {
-  private final FachadaViandasPrincipal fachada;
+  private final Fachada fachada;
 
-  public ViandaController(FachadaViandasPrincipal fachada){
+  public ViandaController(Fachada fachada){
     this.fachada = fachada;
   }
 
@@ -44,8 +45,8 @@ public class ViandaController {
 
   public void modificarHeladera(Context context){
     var qr = context.pathParamAsClass("qr",String.class).get();
-    HeladeraDestino heladera = context.bodyAsClass(HeladeraDestino.class);
-    var ViandaDtoRta = this.fachada.modificarHeladera(qr,heladera.getHeladeraDestino());
+    HeladeraDTO heladera = context.bodyAsClass(HeladeraDTO.class);
+    var ViandaDtoRta = this.fachada.modificarHeladera(qr,heladera.getId());
     context.json(ViandaDtoRta);
   }
 
