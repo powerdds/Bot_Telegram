@@ -84,11 +84,8 @@ public class ViandasProxy implements FachadaViandas {
     @SneakyThrows
     @Override
     public ViandaDTO modificarHeladera(String s, int i) {
-        HeladeraDTO heladeradto=new HeladeraDTO(i,null,null);
-        if(i<0){
-            heladeradto.setId(null);
-            //la vianda ya la retiraron de la heladera
-        }
+
+        HeladeraDTO heladeradto = new HeladeraDTO(i,null,null);
         Response<ViandaDTO> execute = service.modifHeladeraVianda(s, heladeradto).execute();
 
         if (execute.isSuccessful()) {
