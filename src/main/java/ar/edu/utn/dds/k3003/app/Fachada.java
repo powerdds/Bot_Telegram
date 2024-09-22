@@ -4,8 +4,11 @@ import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.*;
 import ar.edu.utn.dds.k3003.facades.exceptions.TrasladoNoAsignableException;
+import ar.edu.utn.dds.k3003.complementos.Retiro;
 import ar.edu.utn.dds.k3003.complementos.Ruta;
 import ar.edu.utn.dds.k3003.complementos.Traslado;
+import ar.edu.utn.dds.k3003.fachadas.FachadaHeladerasImp;
+import ar.edu.utn.dds.k3003.fachadas.FachadaViandasImp;
 import ar.edu.utn.dds.k3003.repositories.RutaMapper;
 import ar.edu.utn.dds.k3003.repositories.RutaRepository;
 import ar.edu.utn.dds.k3003.repositories.TrasladoMapper;
@@ -16,30 +19,31 @@ import lombok.Setter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.*;
 
 @Setter
 @Getter
 
-public class FachadaLogisticaPrincipal implements ar.edu.utn.dds.k3003.facades.FachadaLogistica {
+public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaLogistica {
 
     private EntityManagerFactory entityManagerFactory;
-    private RutaRepository rutaRepository;
-    private RutaMapper rutaMapper;
-    private TrasladoRepository trasladoRepository;
-    private TrasladoMapper trasladoMapper;
+    private final RutaRepository rutaRepository;
+    private final RutaMapper rutaMapper;
+    private final TrasladoRepository trasladoRepository;
+    private final TrasladoMapper trasladoMapper;
     private FachadaViandas fachadaViandas;
     private FachadaHeladeras fachadaHeladeras;
 
-/*
-    public FachadaLogisticaPrincipal(EntityManagerFactory entityManagerFactory){
+
+    public Fachada(EntityManagerFactory entityManagerFactory){
         this.entityManagerFactory = entityManagerFactory;
         this.rutaRepository = new RutaRepository();
         this.rutaMapper = new RutaMapper();
         this.trasladoMapper = new TrasladoMapper();
         this.trasladoRepository = new TrasladoRepository();
-    }*/
-    public FachadaLogisticaPrincipal(){
+    }
+    public Fachada(){
         this.rutaRepository = new RutaRepository();
         this.rutaMapper = new RutaMapper();
         this.trasladoMapper = new TrasladoMapper();
@@ -79,7 +83,7 @@ public class FachadaLogisticaPrincipal implements ar.edu.utn.dds.k3003.facades.F
         trasladoRepository.setEntityManager(entityManager);
 
         trasladoRepository.getEntityManager().getTransaction().begin();
-        fachadaViandas.buscarXQR(trasladoDTO.getQrVianda());
+        fachadaViandas.buscarXQR(trasladoDTO.getQrVianda()); //Tirar 404
 
         List<Ruta> rutasPosibles = this.rutaRepository.findByHeladeras(trasladoDTO.getHeladeraOrigen(), trasladoDTO.getHeladeraDestino());
 

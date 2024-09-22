@@ -1,6 +1,6 @@
-package ar.edu.utn.dds.k3003.controller;
+package ar.edu.utn.dds.k3003.controladores;
+
 import ar.edu.utn.dds.k3003.app.Fachada;
-import ar.edu.utn.dds.k3003.app.FachadaLogisticaPrincipal;
 import ar.edu.utn.dds.k3003.complementos.Traslado;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoTrasladoEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
@@ -13,9 +13,9 @@ import java.util.NoSuchElementException;
 
 public class TrasladoController {
 
-    private final FachadaLogisticaPrincipal fachada;
+    private final Fachada fachada;
 
-    public TrasladoController(FachadaLogisticaPrincipal fachada) {
+    public TrasladoController(Fachada fachada) {
         this.fachada = fachada;
     }
 
@@ -72,5 +72,9 @@ public class TrasladoController {
         EstadoTrasladoEnum nuevoEstado = context.bodyAsClass(EstadoTrasladoEnum.class);
         fachada.modificarEstadoTraslado(id, nuevoEstado);
         context.result("Estado del traslado modificado");
+    }
+
+    public void retirarTraslado(Context context) throws  Exception{
+        var id = context.pathParamAsClass("id", Long.class).get();
     }
 }
