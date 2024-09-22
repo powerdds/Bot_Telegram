@@ -7,7 +7,6 @@ import ar.edu.utn.dds.k3003.facades.dtos.Constants;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.Javalin;
 
 import javax.persistence.EntityManagerFactory;
@@ -29,7 +28,7 @@ public class WebApp {
         Integer port = Integer.parseInt(System.getProperty("port","8080"));
         Javalin app = Javalin.create().start(port);
 
-      /*  Map<String, String> env = System.getenv();
+       Map<String, String> env = System.getenv();
         Map<String, Object> configOverrides = new HashMap<String, Object>();
         String[] keys = new String[] { "javax.persistence.jdbc.url", "javax.persistence.jdbc.user",
                 "javax.persistence.jdbc.password", "javax.persistence.jdbc.driver", "hibernate.hbm2ddl.auto",
@@ -39,7 +38,7 @@ public class WebApp {
                 String value = env.get(key);
                 configOverrides.put(key, value);
             }
-        }*/
+        }
         EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("tpdb");
 
         var fachada=new Fachada();
@@ -66,7 +65,7 @@ public class WebApp {
     }
 
     public static void configureObjectMapper(ObjectMapper objectMapper) {
-        objectMapper.registerModule(new JavaTimeModule());
+        //objectMapper.registerModule();
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());

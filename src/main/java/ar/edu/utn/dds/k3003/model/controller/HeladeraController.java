@@ -20,12 +20,13 @@ public class HeladeraController {
         var heladeraDTO = ctx.bodyAsClass(HeladeraDTO.class);
         try {
             var heladeraDTORta = this.fachada.agregar(heladeraDTO);
-            ctx.json(heladeraDTORta);
             ctx.status(200);
-           //ctx.result("Heladera agregada correctamente");
+            RespuestaDTO respuestaDTO = new RespuestaDTO(200, "Heladera agregada correctamente", heladeraDTORta);
+            ctx.json(respuestaDTO);
         } catch(NoSuchElementException ex){
             ctx.status(400);
-            ctx.result("Error de solicitud");
+            RespuestaDTO respuestaDTO = new RespuestaDTO(400, "Error de solicitud", null);
+            ctx.json(respuestaDTO);
         }
     }
 
