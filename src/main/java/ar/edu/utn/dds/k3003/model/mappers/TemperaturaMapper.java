@@ -1,4 +1,4 @@
-package ar.edu.utn.dds.k3003.repositories;
+package ar.edu.utn.dds.k3003.model.mappers;
 
 import ar.edu.utn.dds.k3003.facades.dtos.TemperaturaDTO;
 import ar.edu.utn.dds.k3003.model.Temperatura;

@@ -16,61 +16,74 @@ public class HeladeraController {
         this.fachada =fachadaHeladera;
     }
 
-    public void agregar(Context ctx) {
-        var heladeraDTO = ctx.bodyAsClass(HeladeraDTO.class);
+    public void agregar(Context context) {
+        var heladeraDTO = context.bodyAsClass(HeladeraDTO.class);
+        var status = 200;
         try {
             var heladeraDTORta = this.fachada.agregar(heladeraDTO);
-            ctx.status(200);
-            RespuestaDTO respuestaDTO = new RespuestaDTO(200, "Heladera agregada correctamente", heladeraDTORta);
-            ctx.json(respuestaDTO);
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Heladera agregada correctamente", heladeraDTORta);
+            context.status(status).json(respuestaDTO);
         } catch(NoSuchElementException ex){
-            ctx.status(400);
-            RespuestaDTO respuestaDTO = new RespuestaDTO(400, "Error de solicitud", null);
-            ctx.json(respuestaDTO);
+            status = 400;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud", null);
+            context.status(status).json(respuestaDTO);
         }
     }
 
-    public void obtener(Context ctx) {
-        var id = ctx.pathParamAsClass("id", Integer.class).get();
+    public void obtener(Context context) {
+        var id = context.pathParamAsClass("id", Integer.class).get();
+        var status = 200;
         try {
             var heladera = this.fachada.obtenerHeladera(id);
-            ctx.json(heladera);
-            ctx.status(200);
-           // ctx.result("Heladera obtenida correctamente");
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Heladera obtenida correctamente", heladera);
+            context.status(status).json(respuestaDTO);
 
         } catch (NoSuchElementException ex) {
-            ctx.status(404);
-            ctx.result("Heladera no encontrada");
+            status = 404;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Heladera no encontrada", null);
+            context.status(status).json(respuestaDTO);
         }
     }
     public void depositar(Context context) {
         var vianda = context.bodyAsClass(ViandaDTO.class);
+        var status = 200;
         try {
             this.fachada.depositar(vianda.getHeladeraId(), vianda.getCodigoQR());
-            context.status(200);
-            context.result("Vianda depositada correctamente");
+            RespuestaDTO respuestaDTO = new RespuestaDTO(200, "Vianda depositada correctamente", null);
+            context.status(200).json(respuestaDTO);
         } catch (Exception ex){
-            context.status(400);
-            context.result("Error de solicitud");
+            status = 400;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud", null);
+            context.status(status).json(respuestaDTO);
         }
     }
     public void retirar(Context context) {
-        var retirar=context.bodyAsClass(RetiroDTO.class);
+        var retirar = context.bodyAsClass(RetiroDTO.class);
+        var status = 200;
         try {
             this.fachada.retirar(retirar);
-            context.status(200);
-            context.result("Vianda retirada correctamente");
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Vianda retirada correctamente", null);
+            context.status(status).json(respuestaDTO);
         }
         catch(Exception ex){
-            context.status(400);
-            context.result("Error de solicitud "+ex.getMessage());
+            status = 400;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud "+ex.getMessage(), null);
+            context.status(status).json(respuestaDTO);
         }
     }
 
     public void cleanup(Context context) {
-        if(fachada.clean())
-            context.status(200).result("Se borro la BD con exito =)");
-        else
-            context.status(400).result("No se borro la BD =(");
+
+        var status = 200;
+
+        if(fachada.clean()){
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Se borro la BD con exito =)", null);
+            context.status(status).json(respuestaDTO);
+        }
+        else{
+            status = 400;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "No se borro la BD =(", null);
+            context.status(status).json(respuestaDTO);
+        }
     }
 }

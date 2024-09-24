@@ -117,21 +117,13 @@
       <version>5.6.15.Final</version>
     </dependency>
 
-    <!-- Worker -->
+    <!-- cola de mensajes -->
     <!-- https://mvnrepository.com/artifact/com.rabbitmq/amqp-client -->
     <dependency>
       <groupId>com.rabbitmq</groupId>
       <artifactId>amqp-client</artifactId>
       <version>5.17.0</version>
     </dependency>
-
-    <!-- https://mvnrepository.com/artifact/com.fasterxml.jackson.datatype/jackson-datatype-jsr310 -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.datatype</groupId>
-      <artifactId>jackson-datatype-jsr310</artifactId>
-      <version>2.15.2</version>
-    </dependency>
-
 
   </dependencies>
 

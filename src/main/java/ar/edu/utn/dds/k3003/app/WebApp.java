@@ -4,13 +4,13 @@ import ar.edu.utn.dds.k3003.clientes.ViandasProxy;
 import ar.edu.utn.dds.k3003.model.controller.HeladeraController;
 import ar.edu.utn.dds.k3003.model.controller.TemperaturaController;
 import ar.edu.utn.dds.k3003.facades.dtos.Constants;
+import ar.edu.utn.dds.k3003.clientes.workers.SensorTemperatura;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.Javalin;
 
-import javax.persistence.EntityManagerFactory;
-import javax.persistence.Persistence;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Locale;
@@ -18,46 +18,61 @@ import java.util.Map;
 import java.util.TimeZone;
 
 public class WebApp {
-    public static void main(String[] args){
 
-        var URL_VIANDAS = System.getenv().get("URL_VIANDAS");
-        var URL_LOGISTICA = System.getenv().get("URL_LOGISTICA");
-        var URL_HELADERAS = System.getenv().get("URL_HELADERAS");
-        var URL_COLABORADORES = System.getenv().get("URL_COLABORADORES");
+    public static void main(String[] args) throws Exception {
 
-        Integer port = Integer.parseInt(System.getProperty("port","8080"));
-        Javalin app = Javalin.create().start(port);
+        // Iniciar variables de entorno base de datos
+        //iniciarVariablesBaseDatos();
 
-       Map<String, String> env = System.getenv();
-        Map<String, Object> configOverrides = new HashMap<String, Object>();
-        String[] keys = new String[] { "javax.persistence.jdbc.url", "javax.persistence.jdbc.user",
-                "javax.persistence.jdbc.password", "javax.persistence.jdbc.driver", "hibernate.hbm2ddl.auto",
-                "hibernate.connection.pool_size", "hibernate.show_sql" };
-        for (String key : keys) {
-            if (env.containsKey(key)) {
-                String value = env.get(key);
-                configOverrides.put(key, value);
-            }
-        }
-        EntityManagerFactory entityManagerFactory = Persistence.createEntityManagerFactory("tpdb");
+        // Iniciar el worker en un hilo separado
+        iniciarWorkerSensorTemperaturas();
 
-        var fachada=new Fachada();
+        // Iniciar la API
+        Javalin app = iniciarApiJavalin();
+
         var objectMapper = createObjectMapper();
-        fachada.setViandasProxy(new ViandasProxy(objectMapper));//pruebas locales
-        var heladeraController=new HeladeraController(fachada);
-        var temperaturaController=new TemperaturaController(fachada);
+        var fachada = crearFachada(objectMapper);
 
+        var heladeraController = new HeladeraController(fachada);
+        var temperaturaController = new TemperaturaController(fachada);
 
-
-        app.post("/heladeras",heladeraController::agregar);
-        app.get("/heladeras/{id}",heladeraController::obtener);
-        app.post("/temperaturas",temperaturaController::agregar);
-        app.get("/heladeras/{id}/temperaturas",temperaturaController::obtener);
-        app.post("/depositos",heladeraController::depositar);
-        app.post("/retiros",heladeraController::retirar);
-        app.get("/cleanup",heladeraController::cleanup);
+        // Definir las rutas de la API
+        app.post("/heladeras", heladeraController::agregar);
+        app.get("/heladeras/{id}", heladeraController::obtener);
+        //app.post("/temperaturas", temperaturaController::agregar);
+        app.get("/heladeras/{id}/temperaturas", temperaturaController::obtener);
+        app.post("/depositos", heladeraController::depositar);
+        app.post("/retiros", heladeraController::retirar);
+        app.get("/cleanup", heladeraController::cleanup);
     }
 
+    // Iniciar el worker de RabbitMQ
+    private static void iniciarWorkerSensorTemperaturas() {
+        Thread workerThread = new Thread(() -> {
+            try {
+                SensorTemperatura.iniciar(); // Inicia el worker de RabbitMQ
+            } catch (Exception e) {
+                System.err.println("Error al iniciar el worker de RabbitMQ: " + e.getMessage());
+                e.printStackTrace();
+            }
+        });
+        workerThread.start(); // Iniciar el hilo del worker
+    }
+
+    // Crear la fachada
+    private static Fachada crearFachada(ObjectMapper objectMapper) {
+        var fachada = new Fachada();
+        fachada.setViandasProxy(new ViandasProxy(objectMapper)); // Usar ViandasProxy para pruebas locales
+        return fachada;
+    }
+
+    // Inicializar la API
+    private static Javalin iniciarApiJavalin() {
+        int port = Integer.parseInt(System.getProperty("port", "8080")); // Usar puerto 8080 por defecto
+        return Javalin.create().start(port);
+    }
+
+    // Configurar el ObjectMapper
     public static ObjectMapper createObjectMapper() {
         var objectMapper = new ObjectMapper();
         configureObjectMapper(objectMapper);
@@ -65,7 +80,7 @@ public class WebApp {
     }
 
     public static void configureObjectMapper(ObjectMapper objectMapper) {
-        //objectMapper.registerModule();
+        objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());

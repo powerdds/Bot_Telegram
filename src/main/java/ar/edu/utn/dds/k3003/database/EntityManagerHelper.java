@@ -3,6 +3,7 @@ package ar.edu.utn.dds.k3003.database;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
+import java.util.HashMap;
 import java.util.Map;
 
 public class EntityManagerHelper {
@@ -11,7 +12,7 @@ public class EntityManagerHelper {
     private static final ThreadLocal<EntityManager> threadLocal;
 
     static {
-        emf = Persistence.createEntityManagerFactory("tpdb");
+        emf = Persistence.createEntityManagerFactory(System.getenv().get("PERSISTENCE_UNIT"), iniciarVariablesBaseDatos());
         threadLocal = new ThreadLocal<>();
     }
 
@@ -51,4 +52,27 @@ public class EntityManagerHelper {
     public static void closeEntityManagerFactory() {
         emf.close();
     }
+
+    // Configurar las variables de entorno
+    private static Map<String, Object> iniciarVariablesBaseDatos() {
+        Map<String, String> env = System.getenv();
+        Map<String, Object> configOverrides = new HashMap<>();
+        String[] keys = new String[]{
+                "PERSISTENCE_UNIT", // nombre de la base de datos
+                "javax.persistence.jdbc.url",
+                "javax.persistence.jdbc.user",
+                "javax.persistence.jdbc.password",
+                "javax.persistence.jdbc.driver",
+                "hibernate.hbm2ddl.auto",
+                "hibernate.connection.pool_size",
+                "hibernate.show_sql"
+        };
+        for (String key : keys) {
+            if (env.containsKey(key)) {
+                configOverrides.put(key, env.get(key));
+            }
+        }
+        return configOverrides;
+    }
+
 }

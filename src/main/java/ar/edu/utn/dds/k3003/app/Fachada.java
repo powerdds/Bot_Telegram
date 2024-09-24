@@ -5,9 +5,9 @@ import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.*;
 import ar.edu.utn.dds.k3003.model.Heladera;
 import ar.edu.utn.dds.k3003.model.Temperatura;
-import ar.edu.utn.dds.k3003.repositories.HeladeraMapper;
+import ar.edu.utn.dds.k3003.model.mappers.HeladeraMapper;
 import ar.edu.utn.dds.k3003.repositories.HeladerasRepository;
-import ar.edu.utn.dds.k3003.repositories.TemperaturaMapper;
+import ar.edu.utn.dds.k3003.model.mappers.TemperaturaMapper;
 import ar.edu.utn.dds.k3003.repositories.TemperaturaRepository;
 
 import java.time.LocalDateTime;

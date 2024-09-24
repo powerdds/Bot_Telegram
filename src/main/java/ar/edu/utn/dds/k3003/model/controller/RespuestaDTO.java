@@ -1,5 +1,8 @@
 package ar.edu.utn.dds.k3003.model.controller;
 
+import lombok.Data;
+
+@Data
 public class RespuestaDTO {
 
     private Integer status;

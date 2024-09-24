@@ -13,35 +13,39 @@ public class TemperaturaController {
         this.fachada = fachada;
     }
 
-    public void obtener(Context ctx){
-        var id = ctx.pathParamAsClass("id", Integer.class).get();
+    public void obtener(Context context){
+        var id = context.pathParamAsClass("id", Integer.class).get();
+        var status = 200;
         try {
             var temperaturaDTO = this.fachada.obtenerTemperaturas(id);
-            ctx.json(temperaturaDTO);
-           // ctx.result("Temperaturas obtenidas correctamente");
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Temperaturas obtenidas correctamente", temperaturaDTO);
+            context.status(status).json(respuestaDTO);
         } catch (NoSuchElementException ex) {
-            ctx.status(404);
-            ctx.result("Heladera no encontrada");
+            status = 404;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Heladera no encontrada", null);
+            context.status(status).json(respuestaDTO);
         }
     }
 
     public void agregar(Context context) {
         var temperaturaDTO = context.bodyAsClass(TemperaturaDTO.class);
+        var status = 200;
         try {
             this.fachada.temperatura(temperaturaDTO);
-            context.status(200);
-            context.result("Temperatura registrada correctamente");
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Temperatura registrada correctamente", null);
+            context.status(status).json(respuestaDTO);
         }
         catch (NoSuchElementException ne){
             ne.printStackTrace();
-            context.status(400);
-            context.result("Error de solicitud "+ne.getMessage());
-
+            status = 404;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud "+ne.getMessage(), null);
+            context.status(status).json(respuestaDTO);
         }
         catch (Exception ex){
             ex.printStackTrace();
-            context.status(500);
-            context.result("Error interno "+ex.getMessage());
+            status = 500;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error interno "+ex.getMessage(), null);
+            context.status(status).json(respuestaDTO);
         }
     }
 }
