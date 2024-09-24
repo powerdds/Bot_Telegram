@@ -52,18 +52,6 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     @Override
     public void actualizarPesosPuntos(Double pesosDonados , Double viandasDistribuidas, Double viandasDonadas,
                                       Double tarjetasRepartidas, Double heladerasActivas){
-        //dejar como antes, que se encargue la fachada y testear
-        /*this.puntosCalculo = new PuntosBody(pesosDonados,
-                viandasDistribuidas,
-                viandasDonadas,
-                tarjetasRepartidas,
-                heladerasActivas);
-        this.puntosCalculo.setPesosDonados(pesosDonados);
-        this.puntosCalculo.setViandasDistribuidas(viandasDistribuidas);
-        this.puntosCalculo.setViandasDonadas(viandasDonadas);
-        this.puntosCalculo.setTarjetasRepartidas(tarjetasRepartidas);
-        this.puntosCalculo.setHeladerasActivas(heladerasActivas);
-        puntosRepository.save(puntosCalculo);*/
         pesosDonadosPeso = pesosDonados;
         viandasDistribuidasPeso = viandasDistribuidas;
         viandasDonadasPeso =viandasDonadas;
@@ -73,7 +61,10 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
     @Override
     public Double puntos(Long colaboradorId){// Calcular puntos
         return viandasDistribuidas(colaboradorId) * viandasDistribuidasPeso +
-                viandasDonadas(colaboradorId) * viandasDonadasPeso;}
+                viandasDonadas(colaboradorId) * viandasDonadasPeso
+                /* + pesosDonados(colaboradorId) * pesosDonadosPeso +
+                tarjetasRepartidas(colaboradorId) * tarjetasRepartidasPeso +
+                heladerasActivas(colaboradorId) * heladerasActivasPeso*/;}
 
     public Long viandasDonadas(Long colaboradorId){
         List<ViandaDTO> viandas =  fachadaViandas.viandasDeColaborador(colaboradorId,6,2024);
@@ -83,6 +74,18 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         List<TrasladoDTO> traslados =  fachadaLogistica.trasladosDeColaborador(colaboradorId,6,2024);
         return (long) traslados.size();
     }
+    /*public Long pesosDonados(Long colaboradorId){
+    return 0L;
+}
+
+public Long tarjetasRepartidas(Long colaboradorId){
+    return 0L;
+}
+
+public Long heladerasActivas(Long colaboradorId){
+    //[CANTIDAD_HELADERAS_ACTIVAS] * [∑ MESES_ACTIVAS]
+    return 0L;
+}*/
     @Override
     public ColaboradorDTO modificar(Long colaboradorId, List<FormaDeColaborarEnum> formaDeColaborar){
         ColaboradorDTO colaborador = buscarXId(colaboradorId);

@@ -40,6 +40,8 @@ public class WebApp {
         app.get("/colaboradores/{id}", colaboradorController::obtener);
         app.patch("/colaboradores/{id}",colaboradorController::modificar);
         app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
+        app.get("/colaboradores/{id}/viandasDistribuidas",colaboradorController::viandasDistribuidas);
+        app.get("/colaboradores/{id}/viandasDonadas",colaboradorController::viandasDonadas);
         app.put("/formula", colaboradorController::actualizarPuntos);
         app.post("/colaboradores/prueba", colaboradorController::prueba);
         app.delete("/cleanup",colaboradorController::clean);
