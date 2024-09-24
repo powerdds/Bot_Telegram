@@ -1,6 +1,6 @@
 package ar.edu.utn.dds.k3003.controller;
 
-import ar.edu.utn.dds.k3003.app.FachadaColaboradoresPrincipal;
+import ar.edu.utn.dds.k3003.app.Fachada;
 import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.model.PuntosBody;
@@ -13,17 +13,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 public class ColaboradorController {
-    private final FachadaColaboradoresPrincipal fachada;
+    private final Fachada fachada;
     private EntityManagerFactory entityManagerFactory;
-/*
-    public ColaboradorController(FachadaColaboradoresPrincipal fachada, EntityManagerFactory entityManagerFactory) {
+
+    public ColaboradorController(Fachada fachada, EntityManagerFactory entityManagerFactory) {
         this.entityManagerFactory = entityManagerFactory;
         this.fachada = fachada;
     }
-*/
-    public ColaboradorController(FachadaColaboradoresPrincipal fachada) {
-        this.fachada = fachada;
-    }
+
     public void agregar(Context context) {
         var colaboradorDTO = context.bodyAsClass(ColaboradorDTO.class);
         var colaboradorDTORta = this.fachada.agregar(colaboradorDTO);

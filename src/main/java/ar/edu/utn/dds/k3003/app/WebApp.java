@@ -1,79 +1,78 @@
 package ar.edu.utn.dds.k3003.app;
-
+import ar.edu.utn.dds.k3003.clients.LogisticaProxy;
+import ar.edu.utn.dds.k3003.clients.ViandasProxy;
 import ar.edu.utn.dds.k3003.controller.ColaboradorController;
-import ar.edu.utn.dds.k3003.controller.HeladeraController;
-import ar.edu.utn.dds.k3003.controller.RutaController;
-import ar.edu.utn.dds.k3003.controller.TemperaturaController;
-import ar.edu.utn.dds.k3003.controller.TrasladoController;
-import ar.edu.utn.dds.k3003.controller.ViandaController;
+import ar.edu.utn.dds.k3003.facades.dtos.Constants;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.Javalin;
+
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.TimeZone;
-import ar.edu.utn.dds.k3003.facades.dtos.Constants;
+
 public class WebApp {
-  public static void main(String[] args) {
-    var fachadaViandas = new FachadaViandasPrincipal();
-    var fachadaColaboradores = new FachadaColaboradoresPrincipal();
-    var fachadaLogistica = new FachadaLogisticaPrincipal();
-    var fachadaHeladeras = new FachadaHeladerasPrincipal();
+   public static EntityManagerFactory entityManagerFactory;
+    public static void main(String[] args) {
 
-    var objectMapper = createObjectMapper();
+       startEntityManagerFactory();
 
-    Integer port = Integer.parseInt(System.getProperty("port","8080"));
-    Javalin app = Javalin.create().start(port);
+        var env = System.getenv();
+        var objectMapper = createObjectMapper();
+        var fachada = new Fachada(entityManagerFactory);
 
-    var viandaController = new ViandaController(fachadaViandas);
-    var heladeraController= new HeladeraController(fachadaHeladeras);
-    var temperaturaController = new TemperaturaController(fachadaHeladeras);
-    var trasladosController = new TrasladoController(fachadaLogistica);
-    var rutaController = new RutaController(fachadaLogistica);
-    var colaboradorController = new ColaboradorController(fachadaColaboradores);
+        fachada.setViandasProxy(new ViandasProxy(objectMapper));
+        fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
 
-    app.post("/viandas",viandaController::agregar);
-    app.get("/viandas",viandaController::listar);
-    app.get("/viandas/search/findByColaboradorIdAndAnioAndMes",viandaController::buscarPorColaboradorIdMesYAnio);
-    app.get("/viandas/{qr}",viandaController::buscarPorQr);
-    app.get("/viandas/{qr}/vencida",viandaController::verificarVencimiento);
-    app.patch("/viandas/{qr}",viandaController::modificarHeladera);
-    app.patch("/viandas/{qr}/estado",viandaController::modificarEstado);
-    /*------------------------------------------------*/
-    app.post("/heladeras",heladeraController::agregar);
-    app.get("/heladeras/{id}",heladeraController::obtener);
-    app.post("/temperaturas",temperaturaController::agregar);
-    app.get("/heladeras/{id}/temperaturas",temperaturaController::obtener);
-    app.post("/depositos",heladeraController::depositar);
-    app.post("/retiros",heladeraController::retirar);
-    app.get("/cleanup",heladeraController::cleanup);
-    /*------------------------------------------------*/
-    app.post("/rutas", rutaController::agregar);
-    app.post("/traslados", trasladosController::asignar);
-    app.get("/traslados/search/findByColaboradorId", trasladosController::trasladosColaborador);
-    app.get("/traslados/{id}", trasladosController::obtener);
-    app.patch("/traslados/{id}", trasladosController::cambiarEstado);
-    //app.delete("/cleanup" , dbController::eliminarDB);
-    /*------------------------------------------------*/
-    app.post("/colaboradores", colaboradorController::agregar);
-    app.get("/colaboradores/{id}", colaboradorController::obtener);
-    app.patch("/colaboradores/{id}",colaboradorController::modificar);
-    app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
-    app.put("/formula", colaboradorController::actualizarPuntos);
-    app.post("/colaboradores/prueba", colaboradorController::prueba);
-    app.delete("/cleanup",colaboradorController::clean);
-  }
+        var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
-  public static ObjectMapper createObjectMapper() {
-    var objectMapper = new ObjectMapper();
-    objectMapper.registerModule(new JavaTimeModule());
-    objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
-    objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-    var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());
-    sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-    objectMapper.setDateFormat(sdf);
-    return objectMapper;
-  }
+        var app = Javalin.create().start(port);
+
+        var colaboradorController = new ColaboradorController(fachada,entityManagerFactory);
+
+        app.post("/colaboradores", colaboradorController::agregar);
+        app.get("/colaboradores/{id}", colaboradorController::obtener);
+        app.patch("/colaboradores/{id}",colaboradorController::modificar);
+        app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
+        app.put("/formula", colaboradorController::actualizarPuntos);
+        app.post("/colaboradores/prueba", colaboradorController::prueba);
+        app.delete("/cleanup",colaboradorController::clean);
+    }
+
+    public static ObjectMapper createObjectMapper() {
+        var objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());
+        objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        var sdf = new SimpleDateFormat(Constants.DEFAULT_SERIALIZATION_FORMAT, Locale.getDefault());
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+        objectMapper.setDateFormat(sdf);
+        return objectMapper;
+    }
+
+    public static void startEntityManagerFactory() {
+// https://stackoverflow.com/questions/8836834/read-environment-variables-in-persistence-xml-file
+        Map<String, String> env = System.getenv();
+        Map<String, Object> configOverrides = new HashMap<String, Object>();
+        String[] keys = new String[] {
+                "javax.persistence.jdbc.url",
+                "javax.persistence.jdbc.user",
+                "javax.persistence.jdbc.password", "javax.persistence.jdbc.driver", "hibernate.hbm2ddl.auto",
+                "hibernate.connection.pool_size", "hibernate.show_sql" };
+        for (String key : keys) {
+            if (env.containsKey(key)) {
+                String value = env.get(key);
+                configOverrides.put(key, value);
+            }
+        }
+        entityManagerFactory = Persistence.createEntityManagerFactory("db", configOverrides);
+    }
 }
+
+

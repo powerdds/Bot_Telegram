@@ -9,8 +9,8 @@ import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
 import retrofit2.Response;
 import retrofit2.Retrofit;
-
 import retrofit2.converter.jackson.JacksonConverterFactory;
+
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -38,38 +38,31 @@ public class ViandasProxy implements FachadaViandas {
         return null;
     }
 
-    @SneakyThrows
     @Override
-    public ViandaDTO modificarEstado(String s, EstadoViandaEnum estadoViandaEnum) throws NoSuchElementException {
-
-        Response<ViandaDTO> execute = service.modifEstadoVianda(s, estadoViandaEnum.name()).execute();
-
-        if (execute.isSuccessful()) {
-            return execute.body();
-        }
-        if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
-            throw new NoSuchElementException("no se encontro la vianda " + s);
-        }
-        throw new RuntimeException("Error conectandose con el componente viandas");
-    }
-    @Override
-    public List<ViandaDTO> viandasDeColaborador(Long aLong, Integer integer, Integer integer1)
+    public ViandaDTO modificarEstado(String s, EstadoViandaEnum estadoViandaEnum)
             throws NoSuchElementException {
         return null;
     }
 
     @SneakyThrows
     @Override
-    public ViandaDTO buscarXQR(String qr) throws NoSuchElementException {
-        Response<ViandaDTO> execute = service.get(qr).execute(); //hace el request CON EXECUTE() y devuelve un ViandaDTO
+    public List<ViandaDTO> viandasDeColaborador(Long aLong, Integer integer, Integer integer1) throws NoSuchElementException{
+
+        Response<List<ViandaDTO>> execute = service.get(aLong, integer, integer1).execute();
 
         if (execute.isSuccessful()) {
-            return execute.body(); //devuelve un ViandaDTO
-        }
+        return execute.body();
+    }
         if (execute.code() == HttpStatus.NOT_FOUND.getCode()) {
-            throw new NoSuchElementException("no se encontro la vianda " + qr);
-        }
+        throw new NoSuchElementException("no se encontraron las viandas del colaborador " + aLong);
+    }
         throw new RuntimeException("Error conectandose con el componente viandas");
+    }
+
+    @SneakyThrows
+    @Override
+    public ViandaDTO buscarXQR(String qr) throws NoSuchElementException {
+        return null;
     }
 
     @Override
