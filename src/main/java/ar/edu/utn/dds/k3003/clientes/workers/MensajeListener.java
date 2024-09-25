@@ -9,12 +9,10 @@ import java.util.Map;
 
 public class MensajeListener extends DefaultConsumer {
 
-    private final String queueName;
-    private MensajeStrategyFactory mensajeStrategyFactory;
+    private final MensajeStrategyFactory mensajeStrategyFactory;
 
-    private MensajeListener(Channel channel, String queueName) {
+    private MensajeListener(Channel channel) {
         super(channel);
-        this.queueName = queueName;
         this.mensajeStrategyFactory = new MensajeStrategyFactory();
     }
 
@@ -27,6 +25,7 @@ public class MensajeListener extends DefaultConsumer {
         factory.setUsername(env.get("QUEUE_USERNAME"));
         factory.setPassword(env.get("QUEUE_PASSWORD"));
         factory.setVirtualHost(env.get("QUEUE_USERNAME")); // El VHOST suele ser el mismo que el usuario
+
         String colaSensorTemperaturas = env.get("QUEUE_SENSOR_TEMPERATURA");
         String colaPrueba = env.get("QUEUE_PRUEBA");
 
@@ -35,10 +34,10 @@ public class MensajeListener extends DefaultConsumer {
         Channel channel = connection.createChannel();
 
         // Crear una nueva instancia de SensorTemperatura
-        MensajeListener sensorTemperatura = new MensajeListener(channel, colaSensorTemperaturas);
+        MensajeListener sensorTemperatura = new MensajeListener(channel);
         sensorTemperatura.iniciarConsumo(colaSensorTemperaturas); // Iniciar el consumo de mensajes
 
-        MensajeListener prueba = new MensajeListener(channel, colaSensorTemperaturas);
+        MensajeListener prueba = new MensajeListener(channel);
         prueba.iniciarConsumo(colaPrueba); // Iniciar el consumo de mensajes
     }
 
@@ -48,7 +47,7 @@ public class MensajeListener extends DefaultConsumer {
         this.getChannel().queueDeclare(colaName, false, false, false, null);
         // Iniciar el consumo de mensajes
         this.getChannel().basicConsume(colaName, false, this);
-        System.out.println("Esperando mensajes en la cola " + colaName);
+        System.out.println("Esperando mensajes en la cola " + colaName + "...");
     }
 
     // Manejo de la entrega de mensajes
@@ -56,6 +55,9 @@ public class MensajeListener extends DefaultConsumer {
     public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties, byte[] body) throws IOException {
         // Confirmar recepción
         this.getChannel().basicAck(envelope.getDeliveryTag(), false);
+
+        System.out.println();
+        System.out.println("Mensaje recibido desde la cola " + envelope.getRoutingKey());
 
         try {
             // Sacar el tipo de mensaje
@@ -69,7 +71,7 @@ public class MensajeListener extends DefaultConsumer {
             mensajeStrategy.procesarMensage(body);
 
         } catch (Exception e){
-            System.err.println("Error: " + e.getMessage());
+            System.err.println("ERROR: No se puede procesar el mensaje debido a que no es un tipo de mensaje permitido...");
         }
     }
 
