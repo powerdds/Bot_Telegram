@@ -25,7 +25,7 @@ public class HeladeraController {
             context.status(status).json(respuestaDTO);
         } catch(NoSuchElementException ex){
             status = 400;
-            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud", null);
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud: " + ex.getMessage(), null);
             context.status(status).json(respuestaDTO);
         }
     }
@@ -53,7 +53,7 @@ public class HeladeraController {
             context.status(200).json(respuestaDTO);
         } catch (Exception ex){
             status = 400;
-            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud", null);
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud: " + ex.getMessage(), null);
             context.status(status).json(respuestaDTO);
         }
     }
@@ -67,7 +67,7 @@ public class HeladeraController {
         }
         catch(Exception ex){
             status = 400;
-            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud "+ex.getMessage(), null);
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud: "+ex.getMessage(), null);
             context.status(status).json(respuestaDTO);
         }
     }

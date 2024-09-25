@@ -4,8 +4,6 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.NoSuchElementException;
 
 @Data
@@ -53,12 +51,12 @@ public class Heladera {
     public Heladera() {
     }
 
-    public void depositarVianda(String qrVianda) {
+    public void depositarVianda() {
         this.viandas++;
         this.cantidadAperturas++;
     }
 
-    public void retirarVianda() throws Exception {
+    public void retirarVianda() {
         this.cantidadAperturas++;
         if (this.viandas > 0) {
             this.viandas--;

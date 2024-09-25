@@ -44,18 +44,17 @@ public class Fachada implements FachadaHeladeras {
     @Override public void depositar(Integer heladeraId, String qrVianda) throws NoSuchElementException {
         Heladera heladera = this.heladerasRepository.findById(Long.valueOf(heladeraId))
                 .orElseThrow(() -> new NoSuchElementException("Heladera no encontrada id: " + heladeraId));
-       ViandaDTO vianda=this.fachadaViandas.buscarXQR(qrVianda);
+       ViandaDTO vianda = this.fachadaViandas.buscarXQR(qrVianda);
 
-        if(vianda.getEstado()!=EstadoViandaEnum.PREPARADA
+        if(vianda.getEstado() != EstadoViandaEnum.PREPARADA
                 && vianda.getEstado()!=EstadoViandaEnum.EN_TRASLADO){
             throw new RuntimeException("La Vianda "+qrVianda+ " no esta preparada ni en traslado, no se puede depositar");
         }
-        if(vianda.getEstado()==EstadoViandaEnum.PREPARADA){//evitar doble llamado con traslados
-        fachadaViandas.modificarEstado(qrVianda, EstadoViandaEnum.DEPOSITADA);
+        if(vianda.getEstado() == EstadoViandaEnum.PREPARADA){//evitar doble llamado con traslados
+            fachadaViandas.modificarEstado(qrVianda, EstadoViandaEnum.DEPOSITADA);
         }
-        heladera.depositarVianda(qrVianda);
+        heladera.depositarVianda();
         this.heladerasRepository.update(heladera);
-
     }
 
     @Override public Integer cantidadViandas(Integer heladeraId) throws NoSuchElementException{
@@ -67,12 +66,12 @@ public class Fachada implements FachadaHeladeras {
     @Override public void retirar(RetiroDTO retiro) throws NoSuchElementException{
         Heladera heladera = this.heladerasRepository.findById(Long.valueOf(retiro.getHeladeraId()))
                 .orElseThrow(() -> new NoSuchElementException("Heladera no encontrada id: " + retiro.getHeladeraId()));
-        ViandaDTO vianda=this.fachadaViandas.buscarXQR(retiro.getQrVianda());
+        ViandaDTO vianda = this.fachadaViandas.buscarXQR(retiro.getQrVianda());
 
         if(vianda.getEstado()!=EstadoViandaEnum.DEPOSITADA){
             throw new RuntimeException("La Vianda "+retiro.getQrVianda()+ " no esta depositada, no se puede retirar");
         }
-        if(vianda.getHeladeraId()!=retiro.getHeladeraId()){//la heladera de la que se quiere retirar la vianda es la heladera en la que realmente esta la vianda
+        if(!Objects.equals(vianda.getHeladeraId(), retiro.getHeladeraId())){//la heladera de la que se quiere retirar la vianda es la heladera en la que realmente esta la vianda
             throw new RuntimeException("La Vianda "+retiro.getQrVianda()+ " no esta depositada en esta heladera "+retiro.getHeladeraId());
         }
         fachadaViandas.modificarEstado(retiro.getQrVianda(), EstadoViandaEnum.RETIRADA);
@@ -102,7 +101,7 @@ public class Fachada implements FachadaHeladeras {
         List<Temperatura> temperaturas= temperaturaRepository.findAllById(heladera.getId());
 
         List<TemperaturaDTO> temperaturaDTOS = temperaturas.stream()
-                .map(temperatura -> temperaturaMapper.map(temperatura))
+                .map(temperaturaMapper::map)
                 .collect(Collectors.toList());
 
         Collections.reverse(temperaturaDTOS);
@@ -123,9 +122,6 @@ public class Fachada implements FachadaHeladeras {
     public boolean clean() {
     temperaturaRepository.findAll().forEach(temperaturaRepository::delete);
      heladerasRepository.findAll().forEach(heladerasRepository::delete);
-     if(heladerasRepository.findAll().isEmpty()  && temperaturaRepository.findAll().isEmpty())
-         return true;
-
-     return false;
+        return heladerasRepository.findAll().isEmpty() && temperaturaRepository.findAll().isEmpty();
     }
 }

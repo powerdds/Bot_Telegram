@@ -40,7 +40,7 @@ public class ViandaTestServer {
     private static void obtenerVianda(Context context) {
 
         var qr = context.pathParam("qr");
-        if (qr.equals("unQRQueExiste")) {
+        if (qr.equals(">")) {
             var viandaDTO1 = new ViandaDTO(qr, LocalDateTime.now(), EstadoViandaEnum.PREPARADA, 2L, 1);
             viandaDTO1.setId(14L);
             context.json(viandaDTO1);

@@ -4,7 +4,7 @@ import ar.edu.utn.dds.k3003.clientes.ViandasProxy;
 import ar.edu.utn.dds.k3003.model.controller.HeladeraController;
 import ar.edu.utn.dds.k3003.model.controller.TemperaturaController;
 import ar.edu.utn.dds.k3003.facades.dtos.Constants;
-import ar.edu.utn.dds.k3003.clientes.workers.SensorTemperatura;
+import ar.edu.utn.dds.k3003.clientes.workers.MensajeListener;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -12,17 +12,12 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.Javalin;
 
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
 import java.util.Locale;
-import java.util.Map;
 import java.util.TimeZone;
 
 public class WebApp {
 
-    public static void main(String[] args) throws Exception {
-
-        // Iniciar variables de entorno base de datos
-        //iniciarVariablesBaseDatos();
+    public static void main(String[] args) {
 
         // Iniciar el worker en un hilo separado
         iniciarWorkerSensorTemperaturas();
@@ -50,7 +45,7 @@ public class WebApp {
     private static void iniciarWorkerSensorTemperaturas() {
         Thread workerThread = new Thread(() -> {
             try {
-                SensorTemperatura.iniciar(); // Inicia el worker de RabbitMQ
+                MensajeListener.iniciar(); // Inicia el worker de RabbitMQ
             } catch (Exception e) {
                 System.err.println("Error al iniciar el worker de RabbitMQ: " + e.getMessage());
                 e.printStackTrace();

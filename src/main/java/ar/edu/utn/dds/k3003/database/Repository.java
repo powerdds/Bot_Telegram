@@ -6,7 +6,7 @@ import java.util.Optional;
 
 public class Repository<T> {
 
-    private Class<T> entityClass;
+    private final Class<T> entityClass;
 
     public Repository(Class<T> entityClass) {
         this.entityClass = entityClass;
