@@ -14,14 +14,15 @@ import ar.edu.utn.dds.k3003.persist.ColaboradorRepository; //revisar
 import javax.persistence.EntityManagerFactory;
 import java.util.List;
 
-public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradores {
+public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradores
+{
     public final ColaboradorRepository colaboradorRepository;
     private final ColaboradorMapper colaboradorMapper;
-    private Double pesosDonadosPeso;
-    private Double viandasDistribuidasPeso;
-    private Double viandasDonadasPeso;
-    private Double tarjetasRepartidasPeso;
-    private Double heladerasActivasPeso;
+    public Double pesosDonadosPeso;
+    public Double viandasDistribuidasPeso;
+    public Double viandasDonadasPeso;
+    public Double tarjetasRepartidasPeso;
+    public Double heladerasActivasPeso;
     private FachadaViandas fachadaViandas;
     private FachadaLogistica fachadaLogistica;
 
@@ -59,19 +60,28 @@ public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaColaboradore
         heladerasActivasPeso = heladerasActivas;
     }
     @Override
-    public Double puntos(Long colaboradorId){// Calcular puntos
-        return viandasDistribuidas(colaboradorId) * viandasDistribuidasPeso +
+    public Double puntos(Long colaboradorId){//,Long mes , Long anio){// Calcular puntos
+        return -1.0;   /*viandasDistribuidas(colaboradorId) * viandasDistribuidasPeso +
                 viandasDonadas(colaboradorId) * viandasDonadasPeso
+                 + pesosDonados(colaboradorId) * pesosDonadosPeso +
+                tarjetasRepartidas(colaboradorId) * tarjetasRepartidasPeso +
+                heladerasActivas(colaboradorId) * heladerasActivasPeso*/
+                }
+
+    public Double puntosAnioMes(Long colaboradorId, Integer mes, Integer anio){
+        return viandasDistribuidas(colaboradorId,mes,anio) * viandasDistribuidasPeso +
+                viandasDonadas(colaboradorId,mes,anio) * viandasDonadasPeso
                 /* + pesosDonados(colaboradorId) * pesosDonadosPeso +
                 tarjetasRepartidas(colaboradorId) * tarjetasRepartidasPeso +
-                heladerasActivas(colaboradorId) * heladerasActivasPeso*/;}
+                heladerasActivas(colaboradorId) * heladerasActivasPeso*/
+                ;}
 
-    public Long viandasDonadas(Long colaboradorId){
-        List<ViandaDTO> viandas =  fachadaViandas.viandasDeColaborador(colaboradorId,6,2024);
+    public Long viandasDonadas(Long colaboradorId, Integer mes, Integer anio){
+        List<ViandaDTO> viandas =  fachadaViandas.viandasDeColaborador(colaboradorId,mes,anio);
         return (long) viandas.size();
     }
-    public Long viandasDistribuidas(Long colaboradorId){
-        List<TrasladoDTO> traslados =  fachadaLogistica.trasladosDeColaborador(colaboradorId,6,2024);
+    public Long viandasDistribuidas(Long colaboradorId, Integer mes, Integer anio){
+        List<TrasladoDTO> traslados =  fachadaLogistica.trasladosDeColaborador(colaboradorId,mes,anio);
         return (long) traslados.size();
     }
     /*public Long pesosDonados(Long colaboradorId){

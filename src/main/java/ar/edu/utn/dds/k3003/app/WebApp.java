@@ -39,9 +39,11 @@ public class WebApp {
         app.post("/colaboradores", colaboradorController::agregar);
         app.get("/colaboradores/{id}", colaboradorController::obtener);
         app.patch("/colaboradores/{id}",colaboradorController::modificar);
-        app.get("/colaboradores/{id}/puntos",colaboradorController::puntos);
-        app.get("/colaboradores/{id}/viandasDistribuidas",colaboradorController::viandasDistribuidas);
-        app.get("/colaboradores/{id}/viandasDonadas",colaboradorController::viandasDonadas);
+        app.get("/colaboradores/{id}/puntosAnioMes",colaboradorController::puntos);
+        app.get("/colaboradores/{id}/viandasDistribuidasAnioMes",colaboradorController::viandasDistribuidas);
+        app.get("/colaboradores/{id}/viandasDonadasAnioMes",colaboradorController::viandasDonadas);
+        app.get("/colaboradores/{id}/puntosViandasDistribuidasAnioMes",colaboradorController::puntosViandasDistribuidas);
+        app.get("/colaboradores/{id}/puntosViandasDonadasAnioMes",colaboradorController::puntosViandasDonadas);
         app.put("/formula", colaboradorController::actualizarPuntos);
         app.post("/colaboradores/prueba", colaboradorController::prueba);
         app.delete("/cleanup",colaboradorController::clean);

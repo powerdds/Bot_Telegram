@@ -34,6 +34,7 @@ public class ColaboradorController {
             var colaboradorDTO = this.fachada.buscarXId(id);
             context.json(colaboradorDTO);
         } catch (NoSuchElementException ex) {
+            //REVISAR
             context.result("Colaborador " + id + " no encontrado" + ex.getLocalizedMessage());
             context.status(HttpStatus.NOT_FOUND);
         }
@@ -41,26 +42,28 @@ public class ColaboradorController {
 
     public void modificar(Context context) {
         var id = context.pathParamAsClass("id", Long.class).get();
-        FormaDeColaborarEnum forma = context.bodyAsClass(FormaDeColaborarEnum.class);
+        var forma = context.bodyAsClass(FormaDeColaborarEnum.class);
         //List<FormaDeColaborarEnum> formas = context.body();
         try {
             //verificar si forma es una FormaDeColaborar
             var colaboradorDTO = this.fachada.modificar(id, List.of(forma));
             context.json(colaboradorDTO);
         } catch (NoSuchElementException ex) {
-            context.result("No se pudo modificar el colaborador" ); //ex.getLocalizedMessage());
-            context.status(HttpStatus.NOT_FOUND);
+            context.result("No se pudo modificar el colaborador"); //ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
     public void puntos(Context context) {
         var id = context.pathParamAsClass("id", Long.class).get();
+        var anio = context.queryParamAsClass("anio",Integer.class).get();
+        var mes = context.queryParamAsClass("mes",Integer.class).get();
         try {
-            var puntosColaborador = this.fachada.puntos(id);
+            var puntosColaborador = this.fachada.puntosAnioMes(id,mes,anio);
             context.result("Puntos totales: " + puntosColaborador); //PROBAR
         } catch (NoSuchElementException ex) {
             context.result(ex.getLocalizedMessage());
-            context.status(HttpStatus.NOT_FOUND);
+            context.status(HttpStatus.NOT_ACCEPTABLE);
         }
     }
 
@@ -81,9 +84,8 @@ public class ColaboradorController {
                     + " peso Pesos = " + pesosDonados + "\n"
                     + " peso Viandas Distribuidas = " + viandasDistribuidas + "\n"
                     + " peso Viandas Donadas = " + viandasDonadas + "\n"
-                    + " peso Tarjetas Repartidas = " +tarjetasRepartidas + "\n"
-                    + " peso Heladeras Activas = " +heladerasActivas)
-            ;
+                    + " peso Tarjetas Repartidas = " + tarjetasRepartidas + "\n"
+                    + " peso Heladeras Activas = " + heladerasActivas);
 
             context.status(HttpStatus.OK);
         } catch (NoSuchElementException ex) {
@@ -92,10 +94,38 @@ public class ColaboradorController {
         }
     }
 
+    public void puntosViandasDonadas(Context context){
+        var id = context.pathParamAsClass("id", Long.class).get();
+        var anio = context.queryParamAsClass("anio",Integer.class).get();
+        var mes = context.queryParamAsClass("mes",Integer.class).get();
+        try {
+            var viandasDonadas = this.fachada.viandasDonadas(id,anio,mes) * this.fachada.viandasDonadasPeso;
+            context.result("Cantidad de viandas donadas: " +  viandasDonadas);
+        } catch (NoSuchElementException ex) {
+            context.result("No se pudieron obtener las viandas donadas " + ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    public void puntosViandasDistribuidas(Context context){
+        var id = context.pathParamAsClass("id", Long.class).get();
+        var anio = context.queryParamAsClass("anio",Integer.class).get();
+        var mes = context.queryParamAsClass("mes",Integer.class).get();
+        try {
+            var viandasDistribuidas = this.fachada.viandasDistribuidas(id,anio,mes) * this.fachada.viandasDistribuidasPeso;
+            context.result("Cantidad de viandas distribuidas: " + viandasDistribuidas);
+        } catch (NoSuchElementException ex) {
+            context.result("No se pudieron obtener las viandas distribuidas " + ex.getLocalizedMessage());
+            context.status(HttpStatus.NOT_FOUND);
+        }
+    }
+
     public void viandasDonadas(Context context){
         var id = context.pathParamAsClass("id", Long.class).get();
+        var anio = context.queryParamAsClass("anio",Integer.class).get();
+        var mes = context.queryParamAsClass("mes",Integer.class).get();
         try {
-            var viandasDonadas = this.fachada.viandasDonadas(id);
+            var viandasDonadas = this.fachada.viandasDonadas(id,anio,mes);
             context.result("Cantidad de viandas donadas: " +  viandasDonadas);
         } catch (NoSuchElementException ex) {
             context.result("No se pudieron obtener las viandas donadas " + ex.getLocalizedMessage());
@@ -105,8 +135,10 @@ public class ColaboradorController {
 
     public void viandasDistribuidas(Context context){
         var id = context.pathParamAsClass("id", Long.class).get();
+        var anio = context.queryParamAsClass("anio",Integer.class).get();
+        var mes = context.queryParamAsClass("mes",Integer.class).get();
         try {
-            var viandasDistribuidas = this.fachada.viandasDistribuidas(id);
+            var viandasDistribuidas = this.fachada.viandasDistribuidas(id,anio,mes);
             context.result("Cantidad de viandas distribuidas: " + viandasDistribuidas);
         } catch (NoSuchElementException ex) {
             context.result("No se pudieron obtener las viandas distribuidas " + ex.getLocalizedMessage());
