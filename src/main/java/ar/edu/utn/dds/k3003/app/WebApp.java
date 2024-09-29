@@ -21,12 +21,30 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+//E4
+import java.util.concurrent.atomic.AtomicInteger;
+import io.javalin.http.HttpStatus;
+import io.javalin.micrometer.MicrometerPlugin;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class WebApp {
 //nuevo
     public static EntityManagerFactory entityManagerFactory;
     public static void main(String[] args) {
-        //nuevo
+        //E3
         startEntityManagerFactory();
+
+
+        //e4
+        final var metricsUtils = new DDMetricsUtils("logistica");
+        final var registry = metricsUtils.getRegistry();
+
+        //Metricas
+        final var myGauge = registry.gauge("dds.unGauge", new AtomicInteger(0));
+
+        //Config
+        final var micrometerPlugin = new MicrometerPlugin(config -> config.registry = registry);
 
         var env = System.getenv();
         var objectMapper = createObjectMapper();
@@ -40,6 +58,7 @@ public class WebApp {
             config.jsonMapper(new JavalinJackson().updateMapper(mapper -> {
                 configureObjectMapper(mapper);
             }));
+            config.registerPlugin(micrometerPlugin);
         }).start(port);
 
         var rutaController = new RutaController(fachada);
