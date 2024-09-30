@@ -18,3 +18,5 @@ QUEUE_HOST -> cluster RabitCloudAMQP\
 QUEUE_USERNAME -> usuario y Vhost RabitCloudAMQP\
 QUEUE_PASSWORD -> contraseña RabitCloudAMQP\
 QUEUE_NAME -> nombre de la instancia RabitCloudAMQP\
+
+DDAPI -> api key de data dog
