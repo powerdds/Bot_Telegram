@@ -4,8 +4,11 @@ import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.*;
 import ar.edu.utn.dds.k3003.facades.exceptions.TrasladoNoAsignableException;
+import ar.edu.utn.dds.k3003.complementos.Retiro;
 import ar.edu.utn.dds.k3003.complementos.Ruta;
 import ar.edu.utn.dds.k3003.complementos.Traslado;
+import ar.edu.utn.dds.k3003.fachadas.FachadaHeladerasImp;
+import ar.edu.utn.dds.k3003.fachadas.FachadaViandasImp;
 import ar.edu.utn.dds.k3003.repositories.RutaMapper;
 import ar.edu.utn.dds.k3003.repositories.RutaRepository;
 import ar.edu.utn.dds.k3003.repositories.TrasladoMapper;
@@ -16,30 +19,31 @@ import lombok.Setter;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import java.util.*;
 
 @Setter
 @Getter
 
-public class FachadaLogisticaPrincipal implements ar.edu.utn.dds.k3003.facades.FachadaLogistica {
+public class Fachada implements ar.edu.utn.dds.k3003.facades.FachadaLogistica {
 
     private EntityManagerFactory entityManagerFactory;
-    private RutaRepository rutaRepository;
-    private RutaMapper rutaMapper;
-    private TrasladoRepository trasladoRepository;
-    private TrasladoMapper trasladoMapper;
+    private final RutaRepository rutaRepository;
+    private final RutaMapper rutaMapper;
+    private final TrasladoRepository trasladoRepository;
+    private final TrasladoMapper trasladoMapper;
     private FachadaViandas fachadaViandas;
     private FachadaHeladeras fachadaHeladeras;
 
-/*
-    public FachadaLogisticaPrincipal(EntityManagerFactory entityManagerFactory){
+
+    public Fachada(EntityManagerFactory entityManagerFactory){
         this.entityManagerFactory = entityManagerFactory;
         this.rutaRepository = new RutaRepository();
         this.rutaMapper = new RutaMapper();
         this.trasladoMapper = new TrasladoMapper();
         this.trasladoRepository = new TrasladoRepository();
-    }*/
-    public FachadaLogisticaPrincipal(){
+    }
+    public Fachada(){
         this.rutaRepository = new RutaRepository();
         this.rutaMapper = new RutaMapper();
         this.trasladoMapper = new TrasladoMapper();
@@ -79,7 +83,7 @@ public class FachadaLogisticaPrincipal implements ar.edu.utn.dds.k3003.facades.F
         trasladoRepository.setEntityManager(entityManager);
 
         trasladoRepository.getEntityManager().getTransaction().begin();
-        fachadaViandas.buscarXQR(trasladoDTO.getQrVianda());
+        fachadaViandas.buscarXQR(trasladoDTO.getQrVianda()); //Tirar 404
 
         List<Ruta> rutasPosibles = this.rutaRepository.findByHeladeras(trasladoDTO.getHeladeraOrigen(), trasladoDTO.getHeladeraDestino());
 
@@ -131,6 +135,9 @@ public class FachadaLogisticaPrincipal implements ar.edu.utn.dds.k3003.facades.F
     }
     @Override
     public void trasladoRetirado(Long trasladoId){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        trasladoRepository.setEntityManager(entityManager);
+        trasladoRepository.getEntityManager().getTransaction().begin();
         TrasladoDTO trasladoBuscado = this.buscarXId(trasladoId);
 
         Ruta rutaDeTraslado = new Ruta(trasladoBuscado.getColaboradorId(), trasladoBuscado.getHeladeraOrigen(), trasladoBuscado.getHeladeraDestino());
@@ -139,33 +146,54 @@ public class FachadaLogisticaPrincipal implements ar.edu.utn.dds.k3003.facades.F
 
         fachadaHeladeras.retirar(retiroDTO);
 
+        //Esto de viandas capaz va, capaz no, a checkear.
         fachadaViandas.modificarEstado(trasladoBuscado.getQrVianda(), EstadoViandaEnum.EN_TRASLADO);
 
+        trasladoRepository.getEntityManager().getTransaction().commit();
+        trasladoRepository.getEntityManager().close();
+
+        this.modificarEstadoTraslado(trasladoId, EstadoTrasladoEnum.EN_VIAJE);
+        /*
         trasladoRepository.save(new Traslado(trasladoBuscado.getQrVianda(),
                                 rutaDeTraslado,
                                 EstadoTrasladoEnum.EN_VIAJE,
                                 trasladoBuscado.getFechaTraslado()));
-
+        */
 
     }
 
     @Override
     public void trasladoDepositado(Long trasladoId){
+        EntityManager entityManager = entityManagerFactory.createEntityManager();
+        trasladoRepository.setEntityManager(entityManager);
+        trasladoRepository.getEntityManager().getTransaction().begin();
         TrasladoDTO trasladoTerminado = this.buscarXId(trasladoId);
+
+        if(!trasladoTerminado.getStatus().equals(EstadoTrasladoEnum.EN_VIAJE)){
+            trasladoRepository.getEntityManager().getTransaction().rollback();
+            trasladoRepository.getEntityManager().close();
+            throw new NoSuchElementException("La vianda con qr" + trasladoTerminado.getQrVianda() +" aún no fue retirada");
+        }
 
         Ruta rutaDeTraslado = new Ruta(trasladoTerminado.getColaboradorId(), trasladoTerminado.getHeladeraOrigen(), trasladoTerminado.getHeladeraDestino());
 
         fachadaHeladeras.depositar(trasladoTerminado.getHeladeraDestino(), trasladoTerminado.getQrVianda());
 
+        //Esto como en traslado retirado, podria ir, o no, a checkear.
         fachadaViandas.modificarEstado(trasladoTerminado.getQrVianda(),EstadoViandaEnum.DEPOSITADA);
 
         fachadaViandas.modificarHeladera(trasladoTerminado.getQrVianda(),trasladoTerminado.getHeladeraDestino());
-
+        trasladoRepository.getEntityManager().getTransaction().commit();
+        trasladoRepository.getEntityManager().close();
+        this.modificarEstadoTraslado(trasladoId, EstadoTrasladoEnum.ENTREGADO);
+        /*
         trasladoRepository.save(new Traslado(trasladoTerminado.getQrVianda(),
                                             rutaDeTraslado,
                                             EstadoTrasladoEnum.ENTREGADO,
                                             trasladoTerminado.getFechaTraslado()));
+    */
     }
+
 
     public void modificarEstadoTraslado(Long trasladoId, EstadoTrasladoEnum nuevoEstado) throws NoSuchElementException{
         EntityManager entityManager = entityManagerFactory.createEntityManager();

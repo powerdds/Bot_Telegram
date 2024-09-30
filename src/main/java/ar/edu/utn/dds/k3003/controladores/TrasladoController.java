@@ -1,10 +1,11 @@
-package ar.edu.utn.dds.k3003.controller;
+package ar.edu.utn.dds.k3003.controladores;
+
 import ar.edu.utn.dds.k3003.app.Fachada;
-import ar.edu.utn.dds.k3003.app.FachadaLogisticaPrincipal;
 import ar.edu.utn.dds.k3003.complementos.Traslado;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoTrasladoEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.facades.exceptions.TrasladoNoAsignableException;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.Context;
 import io.javalin.http.HttpStatus;
 
@@ -13,9 +14,9 @@ import java.util.NoSuchElementException;
 
 public class TrasladoController {
 
-    private final FachadaLogisticaPrincipal fachada;
+    private final Fachada fachada;
 
-    public TrasladoController(FachadaLogisticaPrincipal fachada) {
+    public TrasladoController(Fachada fachada) {
         this.fachada = fachada;
     }
 
@@ -72,5 +73,25 @@ public class TrasladoController {
         EstadoTrasladoEnum nuevoEstado = context.bodyAsClass(EstadoTrasladoEnum.class);
         fachada.modificarEstadoTraslado(id, nuevoEstado);
         context.result("Estado del traslado modificado");
+    }
+
+    public void retirarTraslado(Context context) throws  Exception{
+        try{
+            var id = context.pathParamAsClass("id", Long.class).get();
+            fachada.trasladoRetirado(id);
+            context.result("La vianda se retiró correctamente");
+        }catch (NoSuchElementException e){
+            throw new BadRequestResponse(e.getMessage());
+        }
+    }
+
+    public void depositarTraslado(Context context) throws  Exception{
+        try{
+            var id = context.pathParamAsClass("id", Long.class).get();
+            fachada.trasladoDepositado(id);
+            context.result("La vianda se depositó correctamente");
+        }catch (NoSuchElementException e){
+            throw new BadRequestResponse(e.getMessage());
+        }
     }
 }
