@@ -1,6 +1,7 @@
 package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.clientes.ViandasProxy;
+import ar.edu.utn.dds.k3003.clientes.metrics.DDMetricsUtils;
 import ar.edu.utn.dds.k3003.model.controller.HeladeraController;
 import ar.edu.utn.dds.k3003.model.controller.TemperaturaController;
 import ar.edu.utn.dds.k3003.facades.dtos.Constants;
@@ -10,20 +11,26 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import io.javalin.Javalin;
+import io.javalin.micrometer.MicrometerPlugin;
+import io.micrometer.core.instrument.step.StepMeterRegistry;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 import java.util.TimeZone;
 
+@Slf4j
 public class WebApp {
+
+    private static StepMeterRegistry registry;
 
     public static void main(String[] args) {
 
         // Iniciar el worker en un hilo separado
-        iniciarWorkerSensorTemperaturas();
+        //iniciarWorkerSensorTemperaturas();
 
         // Iniciar la API
-        Javalin app = iniciarApiJavalin();
+        Javalin javalinServer = iniciarApiJavalin();
 
         var objectMapper = createObjectMapper();
         var fachada = crearFachada(objectMapper);
@@ -32,13 +39,19 @@ public class WebApp {
         var temperaturaController = new TemperaturaController(fachada);
 
         // Definir las rutas de la API
-        app.post("/heladeras", heladeraController::agregar);
-        app.get("/heladeras/{id}", heladeraController::obtener);
-        //app.post("/temperaturas", temperaturaController::agregar);
-        app.get("/heladeras/{id}/temperaturas", temperaturaController::obtener);
-        app.post("/depositos", heladeraController::depositar);
-        app.post("/retiros", heladeraController::retirar);
-        app.get("/cleanup", heladeraController::cleanup);
+
+        javalinServer.post("/heladeras", ctx -> {heladeraController.agregar(ctx, registry);});
+        javalinServer.get("/heladeras/{id}", heladeraController::obtener);
+        javalinServer.get("/heladeras/{id}/temperaturas", temperaturaController::obtener);
+        javalinServer.post("/depositos", heladeraController::depositar);
+        javalinServer.post("/retiros", heladeraController::retirar);
+        javalinServer.get("/cleanup", heladeraController::cleanup);
+    }
+
+    private static void initMetrics(String appTag) {
+
+
+
     }
 
     // Iniciar el worker de RabbitMQ
@@ -63,8 +76,16 @@ public class WebApp {
 
     // Inicializar la API
     private static Javalin iniciarApiJavalin() {
+
+        log.info("starting up the server");
+
         int port = Integer.parseInt(System.getProperty("port", "8080")); // Usar puerto 8080 por defecto
-        return Javalin.create().start(port);
+        final var metricsUtils = new DDMetricsUtils("Fachada Heladera");
+        registry = metricsUtils.getRegistry();
+        // Config
+        final var micrometerPlugin = new MicrometerPlugin(config -> config.registry = registry);
+
+        return Javalin.create(config -> {config.registerPlugin(micrometerPlugin);}).start(port);
     }
 
     // Configurar el ObjectMapper

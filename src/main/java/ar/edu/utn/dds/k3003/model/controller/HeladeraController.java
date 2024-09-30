@@ -5,27 +5,46 @@ import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import io.javalin.http.Context;
+import io.micrometer.core.instrument.step.StepMeterRegistry;
+import lombok.extern.java.Log;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.NoSuchElementException;
 
+@Slf4j
 public class HeladeraController {
 
     Fachada fachada;
+    private final String nameAppTag = "dds.agregarHeladera";
 
     public HeladeraController(Fachada fachadaHeladera) {
         this.fachada =fachadaHeladera;
     }
 
-    public void agregar(Context context) {
+    public void agregar(Context context, StepMeterRegistry registry) {
+
+        log.debug("Procesando heladera");
         var heladeraDTO = context.bodyAsClass(HeladeraDTO.class);
         var status = 200;
         try {
             var heladeraDTORta = this.fachada.agregar(heladeraDTO);
             RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Heladera agregada correctamente", heladeraDTORta);
+
+            log.info("Heladera agregada correctamente");
+            registry.counter(nameAppTag,"status","ok").increment();
             context.status(status).json(respuestaDTO);
         } catch(NoSuchElementException ex){
             status = 400;
             RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error de solicitud: " + ex.getMessage(), null);
+
+            registry.counter(nameAppTag,"status","rejected").increment();
+            context.status(status).json(respuestaDTO);
+        } catch  (Exception ex) {
+            log.error("error ", ex);
+            status = 500;
+            RespuestaDTO respuestaDTO = new RespuestaDTO(status, "Error interno: " + ex.getMessage(), null);
+
+            registry.counter(nameAppTag,"status","error").increment();
             context.status(status).json(respuestaDTO);
         }
     }
