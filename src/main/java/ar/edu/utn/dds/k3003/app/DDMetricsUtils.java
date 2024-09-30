@@ -30,7 +30,7 @@ public class DDMetricsUtils {
 
             @Override
             public String apiKey() {
-                return System.getenv("274c900c51107e8dc0f8aa1a25bc83f9");
+                return System.getenv("datadogKey");
             }
 
             @Override

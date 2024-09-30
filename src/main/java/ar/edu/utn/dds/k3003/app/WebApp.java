@@ -61,6 +61,9 @@ public class WebApp {
             config.registerPlugin(micrometerPlugin);
         }).start(port);
 
+        myGauge.set(100);
+        registry.counter("dds.transferencias","status","ok").increment();
+
         var rutaController = new RutaController(fachada);
         var trasladosController = new TrasladoController(fachada);
         var dbController = new DBController(fachada);
