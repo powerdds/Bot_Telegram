@@ -17,11 +17,49 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TimeZone;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
+import io.javalin.Javalin;
+import io.javalin.http.HttpStatus;
+import io.javalin.micrometer.MicrometerPlugin;
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 public class WebApp {
    public static EntityManagerFactory entityManagerFactory;
     public static void main(String[] args) {
 
-       startEntityManagerFactory();
+
+        /////////////////
+        log.info("starting up the server");
+
+        final var metricsUtils = new DDMetricsUtils("transferencias");
+        final var registry = metricsUtils.getRegistry();
+
+        // Metricas
+        final var myGauge = registry.gauge("dds.unGauge", new AtomicInteger(0));
+
+        // Config
+        final var micrometerPlugin = new MicrometerPlugin(config -> config.registry = registry);
+
+        final var javalinServer = Javalin.create(config -> {
+            config.registerPlugin(micrometerPlugin);
+        });
+
+        javalinServer.get("/", ctx -> ctx.result("Ok!"));
+
+        javalinServer.get("/number/{number}", ctx -> {
+            var number = ctx.pathParamAsClass("number", Integer.class).get();
+            myGauge.set(number);
+            ctx.result("updated number: " + number.toString());
+            log.info("valor gauge cambiado");
+        });
+
+
+        javalinServer.start(7070);
+        //////////////
+
+        startEntityManagerFactory();
 
         var env = System.getenv();
         var objectMapper = createObjectMapper();
@@ -29,7 +67,6 @@ public class WebApp {
 
         fachada.setViandasProxy(new ViandasProxy(objectMapper));
         fachada.setLogisticaProxy(new LogisticaProxy(objectMapper));
-
         var port = Integer.parseInt(env.getOrDefault("PORT", "8080"));
 
         var app = Javalin.create().start(port);
