@@ -11,11 +11,11 @@ public class SomeDomainObject {
   private String anAttribute;
   private Long otherAttribute;
 
-  public SomeDomainObject sum(SomeDomainObject other) {
+  public ar.edu.utn.dds.k3003.model.SomeDomainObjects sum(ar.edu.utn.dds.k3003.model.SomeDomainObjects other) {
     if (Objects.isNull(other.getAnAttribute())) {
       throw new SomeDomainException("anAttribute is null", other);
     }
-    return new SomeDomainObject(
+    return new ar.edu.utn.dds.k3003.model.SomeDomainObjects(
         anAttribute + other.getAnAttribute(), otherAttribute + other.getOtherAttribute());
   }
 }

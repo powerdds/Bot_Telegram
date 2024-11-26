@@ -7,15 +7,15 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class SomeDomainObject {
+public class SomeDomainObjects {
   private String anAttribute;
   private Long otherAttribute;
 
-  public SomeDomainObject sum(SomeDomainObject other) {
+  public SomeDomainObjects sum(SomeDomainObjects other) {
     if (Objects.isNull(other.getAnAttribute())) {
       throw new SomeDomainException("anAttribute is null", other);
     }
-    return new SomeDomainObject(
+    return new SomeDomainObjects(
         anAttribute + other.getAnAttribute(), otherAttribute + other.getOtherAttribute());
   }
 }

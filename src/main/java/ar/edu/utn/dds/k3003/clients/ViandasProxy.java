@@ -17,7 +17,7 @@ import java.util.NoSuchElementException;
 public class ViandasProxy implements FachadaViandas {
 
     private final String endpoint;
-    private final ViandasRetrofitClient service;
+    private final ar.edu.utn.dds.k3003.clientes.ViandasRetrofitClient service;
 
     public ViandasProxy(ObjectMapper objectMapper) {
 
@@ -30,7 +30,7 @@ public class ViandasProxy implements FachadaViandas {
                         .addConverterFactory(JacksonConverterFactory.create(objectMapper))
                         .build();
 
-        this.service = retrofit.create(ViandasRetrofitClient.class);
+        this.service = retrofit.create(ar.edu.utn.dds.k3003.clientes.ViandasRetrofitClient.class);
     }
 
     @Override

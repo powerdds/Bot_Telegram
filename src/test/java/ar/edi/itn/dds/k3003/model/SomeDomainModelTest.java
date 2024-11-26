@@ -2,21 +2,21 @@ package ar.edi.itn.dds.k3003.model;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import ar.edu.utn.dds.k3003.model.SomeDomainObject;
+import ar.edu.utn.dds.k3003.model.SomeDomainObjects;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 public class SomeDomainModelTest {
 
-  SomeDomainObject someDomainObject1;
+  SomeDomainObjects someDomainObject1;
 
-  SomeDomainObject someDomainObject2;
+  SomeDomainObjects someDomainObject2;
 
   @BeforeEach
   void setUp() {
-    someDomainObject1 = new SomeDomainObject("a", 1L);
+    someDomainObject1 = new SomeDomainObjects("a", 1L);
 
-    someDomainObject2 = new SomeDomainObject("b", 2L);
+    someDomainObject2 = new SomeDomainObjects("b", 2L);
   }
 
   @Test
