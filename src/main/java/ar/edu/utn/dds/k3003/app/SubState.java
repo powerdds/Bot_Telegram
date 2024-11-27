@@ -13,5 +13,5 @@ public enum SubState {
     DONADOR_DINERO,
     DONADOR_VIANDA,
     TECNICO,
-    TRANSPORTADOR,
+    TRANSPORTADOR, QRVIANDA,
 }

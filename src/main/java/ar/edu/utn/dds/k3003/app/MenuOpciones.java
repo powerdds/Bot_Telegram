@@ -1,16 +1,17 @@
 package ar.edu.utn.dds.k3003.app;
 
+import ar.edu.utn.dds.k3003.clients.FachadaHeladera.HeladerasProxy;
+import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramBot;
 
-public class MenuOpciones extends botState {
+public class MenuOpciones extends BotState {
     SubState subState = SubState.START;
+    private final FachadaHeladeras fachadaHeladeras= HeladerasProxy.getInstance();
 
 
 
-    public void execute(Long userChat, String messageText, bot bot) throws Exception {
+    public void execute(Long userChat, String messageText, Bot bot) throws Exception {
         switch (subState) {
             case START -> elegirFormaDeColaborar(userChat,bot);
             case WAITING_RESPONSE_FORM_COLABORAR -> waitngResponseFormColaborar(userChat,messageText,bot);
@@ -18,11 +19,13 @@ public class MenuOpciones extends botState {
             case DONADOR_DINERO -> waitingResponseDonadorDinero(userChat,messageText,bot);
             case TRANSPORTADOR -> waitingResponseTransportador(userChat,messageText,bot);
             case TECNICO -> waitingResponseTecnico(userChat,messageText,bot);
+            case QRVIANDA -> waitingResponseQRVianda(userChat,messageText,bot);
         }
     }
 
 
-    private void elegirFormaDeColaborar(Long user,bot bot) {
+
+    private void elegirFormaDeColaborar(Long user, Bot bot) {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
         response.setText("""
@@ -44,7 +47,7 @@ public class MenuOpciones extends botState {
             throw new RuntimeException(e);
         }
     }
-    private void menuOpcionesDonadorDinero(Long user,bot bot) {
+    private void menuOpcionesDonadorDinero(Long user, Bot bot) {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
         response.setText("""
@@ -72,7 +75,7 @@ public class MenuOpciones extends botState {
             throw new RuntimeException(e);
         }
     }
-    private void menuOpcionesTecnico(Long user,bot bot) {
+    private void menuOpcionesTecnico(Long user, Bot bot) {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
         response.setText("""
@@ -101,7 +104,7 @@ public class MenuOpciones extends botState {
             throw new RuntimeException(e);
         }
     }
-    private void menuOpcionesTransportador(Long user,bot bot) {
+    private void menuOpcionesTransportador(Long user, Bot bot) {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
         response.setText("""
@@ -137,7 +140,7 @@ public class MenuOpciones extends botState {
             throw new RuntimeException(e);
         }
     }
-    private void menuOpcionesDonadorVianda(Long user,bot bot) {
+    private void menuOpcionesDonadorVianda(Long user, Bot bot) {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
         response.setText("""
@@ -175,7 +178,7 @@ public class MenuOpciones extends botState {
     }
 
 
-    private void waitngResponseFormColaborar(Long userChat, String messageText, bot bot) throws Exception{
+    private void waitngResponseFormColaborar(Long userChat, String messageText, Bot bot) throws Exception{
 
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
@@ -207,9 +210,27 @@ public class MenuOpciones extends botState {
         }
 
     }
+    private void waitingResponseQRVianda(Long userChat, String messageText, Bot bot) throws Exception {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+
+         try {
+             fachadaHeladeras.depositar(5,messageText); //cambiar aque deposite en la heladera q elija
+             sendMessage.setText("Se ha depositado la vianda correctamente");
+             bot.execute(sendMessage);
+
+        } catch (Exception e) {
+             sendMessage.setText(e.getMessage());
+             bot.execute(sendMessage);
+             elegirFormaDeColaborar(userChat,bot);
+
+        }
 
 
-    private void waitingResponseTecnico(Long userChat, String messageText, bot bot)throws Exception {
+    }
+
+
+    private void waitingResponseTecnico(Long userChat, String messageText, Bot bot)throws Exception {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
 
@@ -245,7 +266,43 @@ public class MenuOpciones extends botState {
         }
     }
 
-    private void waitingResponseTransportador(Long userChat,String messageText, bot bot) throws Exception{
+    private void waitingResponseTransportador(Long userChat,String messageText, Bot bot) throws Exception{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+
+        switch (messageText) {
+            case "1" -> {
+                sendMessage.setText("seleccionaste la opcion 1");
+                bot.execute(sendMessage);
+            }
+            case "2" -> {
+                sendMessage.setText("seleccionaste la opcion 2");
+                this.subState=SubState.START;
+                bot.execute(sendMessage);
+                elegirFormaDeColaborar(userChat,bot);
+            }
+            case "3" -> {
+                sendMessage.setText("seleccionaste la opcion 3");
+                bot.execute(sendMessage);
+            }
+            case "4" -> {
+                sendMessage.setText("seleccionaste la opcion depositar vianda \n \"Por favor, escribe el qr de la vianda que deseas depositar.\"");
+                bot.execute(sendMessage);
+                this.subState=SubState.QRVIANDA;
+            }
+            case "5" -> {
+                sendMessage.setText("seleccionaste la opcion 5");
+                bot.execute(sendMessage);
+            }
+            default -> {
+                sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
+                bot.execute(sendMessage);
+                this.subState=SubState.START;
+            }
+        }
+    }
+
+    private void waitingResponseDonadorDinero(Long userChat,String messageText, Bot bot)throws Exception {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
 
@@ -280,42 +337,7 @@ public class MenuOpciones extends botState {
         }
     }
 
-    private void waitingResponseDonadorDinero(Long userChat,String messageText, bot bot)throws Exception {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(userChat.toString());
-
-        switch (messageText) {
-            case "1" -> {
-                sendMessage.setText("seleccionaste la opcion 1");
-                bot.execute(sendMessage);
-            }
-            case "2" -> {
-                sendMessage.setText("seleccionaste la opcion 2");
-                this.subState=SubState.START;
-                bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
-            }
-            case "3" -> {
-                sendMessage.setText("seleccionaste la opcion 3");
-                bot.execute(sendMessage);
-            }
-            case "4" -> {
-                sendMessage.setText("seleccionaste la opcion 4");
-                bot.execute(sendMessage);
-            }
-            case "5" -> {
-                sendMessage.setText("seleccionaste la opcion 5");
-                bot.execute(sendMessage);
-            }
-            default -> {
-                sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
-                bot.execute(sendMessage);
-                this.subState=SubState.START;
-            }
-        }
-    }
-
-    private void waitingResponseDonadorVianda(Long userChat,String messageText, bot bot) throws Exception{
+    private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot bot) throws Exception{
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
 

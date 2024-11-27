@@ -2,13 +2,11 @@ package ar.edu.utn.dds.k3003.app;
 
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.TelegramBotsApi;
-import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-import org.telegram.telegrambots.meta.generics.TelegramBot;
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession;
 
-public class bot extends TelegramLongPollingBot{
+public class Bot extends TelegramLongPollingBot{
     MenuOpciones menu=new MenuOpciones();
 
     @Override
@@ -51,7 +49,7 @@ public class bot extends TelegramLongPollingBot{
         final TelegramBotsApi telegramBotsApi = new TelegramBotsApi(DefaultBotSession.class);
         try {
 // Se registra el bot
-            telegramBotsApi.registerBot(new bot());
+            telegramBotsApi.registerBot(new Bot());
         } catch (TelegramApiException e) {
             e.printStackTrace();
         }

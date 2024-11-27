@@ -1,6 +1,6 @@
 package ar.edu.utn.dds.k3003.app;
 
-public class botState {
+public class BotState {
     SubState subState = SubState.START;
 
 
@@ -12,7 +12,7 @@ public class botState {
     }
 
 
-    public void execute(String messageText, bot bot) throws Exception {
+    public void execute(String messageText, Bot bot) throws Exception {
 
     }
 
