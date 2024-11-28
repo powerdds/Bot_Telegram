@@ -46,9 +46,17 @@ public class ViandasProxy implements FachadaViandas {
         return instance;
     }
 
+    @SneakyThrows
     @Override
     public ViandaDTO agregar(ViandaDTO viandaDTO) {
-        return null;
+        Response<ViandaDTO> execute = service.agregarVianda(viandaDTO).execute();
+
+        if (execute.isSuccessful()) {
+            return execute.body();
+        }
+        else {
+            throw new NoSuchElementException("no se pudo guardar la vianda");
+        }
     }
 
     @SneakyThrows

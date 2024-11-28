@@ -352,10 +352,10 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
             elegirFormaDeColaborar(userChat,bot);
         }
         case "3" -> {
-            sendMessage.setText("seleccionaste la opcion 3");
-            this.subState=SubState.CREARVIANDA;
+            sendMessage.setText("seleccionaste la opcion crear vianda. \n \n Por favor indicar el QR de la vianda");
             bot.execute(sendMessage);
-            elegirFormaDeColaborar(userChat,bot);
+            this.subState=SubState.CREARVIANDA;
+
         }
         case "4" -> {
             sendMessage.setText("seleccionaste la opcion 4");
