@@ -353,7 +353,9 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
         }
         case "3" -> {
             sendMessage.setText("seleccionaste la opcion 3");
+            this.subState=SubState.CREARVIANDA;
             bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
         }
         case "4" -> {
             sendMessage.setText("seleccionaste la opcion 4");
@@ -485,7 +487,7 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
         sendMessage.setChatId(userChat.toString());
         QRVianda=messageText; //guardo el qr
         try {
-            ViandaDTO v = new ViandaDTO(QRVianda,LocalDateTime.now(), EstadoViandaEnum.PREPARADA,-1L,-1);
+            ViandaDTO v = new ViandaDTO(QRVianda,LocalDateTime.now(), EstadoViandaEnum.PREPARADA,colaborador_id,-1);
             fachadaViandas.agregar(v);
             sendMessage.setText("Se ha creado la vianda "+QRVianda+" correctamente \n Para volver al inicio presione cualquier tecla");
             bot.execute(sendMessage);
