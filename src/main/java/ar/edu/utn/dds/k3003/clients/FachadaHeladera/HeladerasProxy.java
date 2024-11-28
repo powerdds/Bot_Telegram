@@ -1,6 +1,5 @@
 package ar.edu.utn.dds.k3003.clients.FachadaHeladera;
 
-import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
@@ -93,7 +92,7 @@ public class HeladerasProxy implements FachadaHeladeras {
     public void setViandasProxy(FachadaViandas fachadaViandas){
     }
     @SneakyThrows
-public RespuestaDTO crearIncidencia(Long id_heladera){
+    public RespuestaDTO crearIncidencia(Long id_heladera){
     Response<RespuestaDTO> execute = service.reportarFalla(id_heladera).execute();
 
     if(execute.isSuccessful()){

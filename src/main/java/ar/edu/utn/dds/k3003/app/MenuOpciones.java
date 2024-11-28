@@ -1,10 +1,10 @@
 package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.clients.FachadaColaboradores.ColaboradoresProxy;
+import ar.edu.utn.dds.k3003.clients.FachadaHeladera.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.clients.FachadaHeladera.HeladerasProxy;
 import ar.edu.utn.dds.k3003.clients.FachadaViandas.ViandasProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaColaboradores;
-import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
@@ -515,8 +515,8 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
         sendMessage.setChatId(userChat.toString());
 
         try {
-          // RespuestaDTO respuesta=fachadaHeladeras.
-            sendMessage.setText("Se creo la incidencia de la heladera ID:  "+messageText+" correctamente \n Para volver al inicio presione cualquier tecla");
+            var respuesta = fachadaHeladeras.crearIncidencia(Long.valueOf(messageText));
+            sendMessage.setText(respuesta.getMessage() + " \n Para volver al inicio presione cualquier tecla");
             bot.execute(sendMessage);
             this.subState=SubState.START;
 
