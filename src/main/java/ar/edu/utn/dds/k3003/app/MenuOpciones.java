@@ -2,8 +2,11 @@ package ar.edu.utn.dds.k3003.app;
 
 import ar.edu.utn.dds.k3003.clients.FachadaColaboradores.ColaboradoresProxy;
 import ar.edu.utn.dds.k3003.clients.FachadaHeladera.HeladerasProxy;
+import ar.edu.utn.dds.k3003.clients.FachadaViandas.ViandasProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaColaboradores;
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
+import ar.edu.utn.dds.k3003.facades.FachadaViandas;
+import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -17,6 +20,8 @@ public class MenuOpciones extends BotState {
     Long colaborador_id;
     private final FachadaHeladeras fachadaHeladeras= HeladerasProxy.getInstance();
     private final FachadaColaboradores fachadaColaboradores= ColaboradoresProxy.getInstance();
+
+    private final FachadaViandas fachadaViandas = ViandasProxy.getInstance();
 
 
 
@@ -33,6 +38,7 @@ public class MenuOpciones extends BotState {
             case IDHELADERADEPOSITAR -> waitingResponseIDHeladeraDepositar(userChat,messageText,bot);
             case QRVIANDARETIRAR -> waitingResponseQRViandaRetirar(userChat,messageText,bot);
             case IDHELADERARETIRAR -> waitingResponseIDHeladeraRetirar(userChat,messageText,bot);
+            case CREARVIANDA -> waitingResponseCrearVianda(userChat,messageText,bot);
         }
     }
 
@@ -308,6 +314,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
         bot.execute(sendMessage);
         this.subState=SubState.IDHELADERARETIRAR;
     }
+
     private void waitingResponseIDHeladeraRetirar(Long userChat, String messageText, Bot bot) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
@@ -473,6 +480,23 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
         }
     }
 
+    private void waitingResponseCrearVianda(Long userChat, String messageText, Bot bot) throws Exception {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        QRVianda=messageText; //guardo el qr
+        try {
+            ViandaDTO v = new ViandaDTO(QRVianda,LocalDateTime.now(), EstadoViandaEnum.PREPARADA,-1L,-1);
+            fachadaViandas.agregar(v);
+            sendMessage.setText("Se ha creado la vianda "+QRVianda+" correctamente \n Para volver al inicio presione cualquier tecla");
+            bot.execute(sendMessage);
+            this.subState=SubState.START;
 
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+
+    }
 
 }

@@ -1,10 +1,12 @@
-package ar.edu.utn.dds.k3003.clientes.viandas;
+package ar.edu.utn.dds.k3003.clients.FachadaViandas;
 
+import ar.edu.utn.dds.k3003.clients.FachadaHeladera.HeladerasProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
+import ar.edu.utn.dds.k3003.utils.ObjectMapperHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
@@ -19,8 +21,11 @@ public class ViandasProxy implements FachadaViandas {
 
     private final String endpoint;
     private final ViandasRetrofitClient service;
+    private static ViandasProxy instance;
 
-    public ViandasProxy(ObjectMapper objectMapper) {
+    private ViandasProxy() {
+
+
 
         var env = System.getenv();
         this.endpoint = env.getOrDefault("URL_VIANDAS", "http://localhost:8081/");
@@ -28,10 +33,17 @@ public class ViandasProxy implements FachadaViandas {
         var retrofit =
                 new Retrofit.Builder()
                         .baseUrl(this.endpoint)
-                        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                        .addConverterFactory(JacksonConverterFactory.create(ObjectMapperHelper.createObjectMapper()))
                         .build();
 
         this.service = retrofit.create(ViandasRetrofitClient.class);
+    }
+
+    public static ViandasProxy getInstance() {
+        if (instance == null) {
+            instance = new ViandasProxy();
+        }
+        return instance;
     }
 
     @Override

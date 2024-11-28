@@ -1,4 +1,4 @@
-package ar.edu.utn.dds.k3003.clientes.viandas;
+package ar.edu.utn.dds.k3003.clients.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import retrofit2.Call;
