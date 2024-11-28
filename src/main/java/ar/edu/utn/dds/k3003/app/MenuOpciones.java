@@ -43,7 +43,7 @@ public class MenuOpciones extends BotState {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
         response.setText("""
-                Bienvenido al bot del TP DDS 2024 para gestion de Heladeras \n \n
+                Bienvenido al bot del TP DDS 2024 para gestion de Heladeras 🚀🚀🚀 \n \n
                 Por favor indique su numero de Colaborador ID:
              
                 """);
