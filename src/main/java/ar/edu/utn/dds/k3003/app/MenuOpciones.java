@@ -10,6 +10,7 @@ import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
+import ar.edu.utn.dds.k3003.facades.dtos.RutaDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -21,6 +22,8 @@ public class MenuOpciones extends BotState {
     SubState subState = SubState.START;
     String QRVianda;
     Long colaborador_id;
+
+    Integer heladera_Origen;
     private final FachadaHeladeras fachadaHeladeras= HeladerasProxy.getInstance();
     private final FachadaColaboradores fachadaColaboradores= ColaboradoresProxy.getInstance();
 
@@ -44,7 +47,8 @@ public class MenuOpciones extends BotState {
             case IDHELADERARETIRAR -> waitingResponseIDHeladeraRetirar(userChat,messageText,bot);
 
             case CREARVIANDA -> waitingResponseCrearVianda(userChat,messageText,bot);
-            case AGREGARRUTA -> waitingResponseAgregarRuta(userChat, messageText, bot);
+            case AGREGARRUTA -> waitingResponseAgregarRutaHeladeraOrigen(userChat, messageText, bot);
+            case IDHELADERADESTINO -> waitingResponseAgregarRuta(userChat, messageText, bot);
             case IDHELADERAINCIDENCIA -> waitingResponseIDHeladeraIncidencia(userChat,messageText,bot);
             case IDREPARAR -> waitingResponseReparar(userChat,messageText,bot);
             case IDHELADERAVERINCIDENCIAS -> waitingResponseVerIncidencias(userChat,messageText,bot);
@@ -337,6 +341,11 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             bot.execute(sendMessage);
             this.subState=SubState.IDREPARAR;
         }
+        case "14" -> {
+            sendMessage.setText("seleccionaste la opcion agregar ruta \n\n Por favor indique el ID de la heladeras Origen y Destino");
+            bot.execute(sendMessage);
+            this.subState=SubState.AGREGARRUTA;
+        }
         default -> {
             sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente las formas de colaborar");
             bot.execute(sendMessage);
@@ -477,14 +486,38 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
     }
 
     /////////////////////////AGREGAR RUTAS/////////////////////////////////
-   private void waitingResponseAgregarRuta(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+   private void waitingResponseAgregarRutaHeladeraOrigen(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+       SendMessage sendMessage = new SendMessage();
+       sendMessage.setChatId(userChat.toString());
+       heladera_Origen = Integer.parseInt(messageText);
+       try {
+           sendMessage.setText("Se indico la heladera de Origen de id "+heladera_Origen+" correctamente \n Ahora envie la heladera destino");
+           bot.execute(sendMessage);
+           this.subState=SubState.IDHELADERADESTINO;
+
+       } catch (Exception e) {
+           sendMessage.setText(e.getMessage());
+           bot.execute(sendMessage);
+           elegirFormaDeColaborar(userChat,bot);
+
+       }
+   }
+
+    private void waitingResponseAgregarRuta(Long userChat, String messageText, Bot bot) throws TelegramApiException{
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
-
+        RutaDTO ruta = new RutaDTO(colaborador_id, heladera_Origen, Integer.parseInt(messageText));
         try {
+            sendMessage.setText("Se indico la heladera Destino de id "+messageText+" correctamente \n Ahora se creará la ruta");
+            fachadaLogistica.agregar(ruta);
+            bot.execute(sendMessage);
+            this.subState=SubState.START;
 
-        } catch (Exception e){
+        } catch (Exception e) {
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
 
         }
-   }
+    }
 }
