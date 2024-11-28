@@ -9,6 +9,7 @@ import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
+import ar.edu.utn.dds.k3003.utils.RespuestaDTO;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -39,8 +40,11 @@ public class MenuOpciones extends BotState {
             case QRVIANDARETIRAR -> waitingResponseQRViandaRetirar(userChat,messageText,bot);
             case IDHELADERARETIRAR -> waitingResponseIDHeladeraRetirar(userChat,messageText,bot);
             case CREARVIANDA -> waitingResponseCrearVianda(userChat,messageText,bot);
+            case IDHELADERAINCIDENCIA -> waitingResponseIDHeladeraIncidencia(userChat,messageText,bot);
         }
     }
+
+
 
 
 ///////////////COLABORADOR ID//////////////////////////
@@ -365,6 +369,11 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
             sendMessage.setText("seleccionaste la opcion 5");
             bot.execute(sendMessage);
         }
+        case "6" -> {
+            sendMessage.setText("seleccionaste la opcion crear Incidencia \n \n Por favor indique el ID de la heladera a la que le hara la incidencia");
+            bot.execute(sendMessage);
+            this.subState=SubState.IDHELADERAINCIDENCIA;
+        }
         default -> {
             sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
             bot.execute(sendMessage);
@@ -501,4 +510,20 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
 
     }
 
+    private void waitingResponseIDHeladeraIncidencia(Long userChat, String messageText, Bot bot) throws TelegramApiException {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+
+        try {
+          // RespuestaDTO respuesta=fachadaHeladeras.
+            sendMessage.setText("Se creo la incidencia de la heladera ID:  "+messageText+" correctamente \n Para volver al inicio presione cualquier tecla");
+            bot.execute(sendMessage);
+            this.subState=SubState.START;
+
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+    }
 }

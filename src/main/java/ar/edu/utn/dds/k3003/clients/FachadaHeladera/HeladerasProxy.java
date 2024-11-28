@@ -7,6 +7,7 @@ import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.TemperaturaDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import ar.edu.utn.dds.k3003.utils.ObjectMapperHelper;
+import ar.edu.utn.dds.k3003.utils.RespuestaDTO;
 import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
 import retrofit2.Response;
@@ -91,7 +92,18 @@ public class HeladerasProxy implements FachadaHeladeras {
     @Override
     public void setViandasProxy(FachadaViandas fachadaViandas){
     }
+    @SneakyThrows
+public RespuestaDTO crearIncidencia(Long id_heladera){
+    Response<RespuestaDTO> execute = service.reportarFalla(id_heladera).execute();
 
+    if(execute.isSuccessful()){
+      return  execute.body();
 
+    }
+
+   else {
+        throw new NoSuchElementException("No se pudo crear la Incidencia para la heladera ID: "+id_heladera);
+    }
+}
 
 }
