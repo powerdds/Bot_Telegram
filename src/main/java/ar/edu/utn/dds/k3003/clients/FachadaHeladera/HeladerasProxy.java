@@ -5,6 +5,8 @@ import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.TemperaturaDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
+import ar.edu.utn.dds.k3003.utils.AlertaDTO;
+import ar.edu.utn.dds.k3003.utils.AlertaHeladeraDTO;
 import ar.edu.utn.dds.k3003.utils.ObjectMapperHelper;
 import ar.edu.utn.dds.k3003.utils.RespuestaDTO;
 import io.javalin.http.HttpStatus;
@@ -118,5 +120,18 @@ public class HeladerasProxy implements FachadaHeladeras {
         }
     }
 
+    @SneakyThrows
+    public AlertaHeladeraDTO verIncidencias(Long id_heladera){
+        Response<AlertaHeladeraDTO> execute = service.getAlertas(id_heladera).execute();
+
+        if(execute.isSuccessful()){
+            return execute.body();
+
+        }
+
+        else {
+            throw new NoSuchElementException("No se pudo reparar la heladera ID: "+id_heladera);
+        }
+    }
 
 }

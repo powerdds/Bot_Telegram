@@ -3,12 +3,13 @@ package ar.edu.utn.dds.k3003.clients.FachadaHeladera;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
+import ar.edu.utn.dds.k3003.utils.AlertaDTO;
+import ar.edu.utn.dds.k3003.utils.AlertaHeladeraDTO;
 import ar.edu.utn.dds.k3003.utils.RespuestaDTO;
 import retrofit2.Call;
-import retrofit2.http.Body;
-import retrofit2.http.PATCH;
-import retrofit2.http.POST;
-import retrofit2.http.Path;
+import retrofit2.http.*;
+
+import java.util.List;
 
 public interface HeladerasRetrofitClient {
 
@@ -23,4 +24,6 @@ public interface HeladerasRetrofitClient {
 
     @PATCH("/heladeras/{id}/reparar")
     Call<Void> reparar(@Path("id") Long heladera_id);
+    @GET("/heladeras/{id}/alertas")
+    Call<AlertaHeladeraDTO> getAlertas(@Path("id") Long heladera_id);
 }

@@ -9,7 +9,7 @@ import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
-import ar.edu.utn.dds.k3003.utils.RespuestaDTO;
+
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
@@ -28,20 +28,23 @@ public class MenuOpciones extends BotState {
 
     public void execute(Long userChat, String messageText, Bot bot) throws Exception {
         switch (subState) {
-            case START -> indicarNroColaborador(userChat,bot);
-            case COLABORADORID -> waitingResponseColaboradorId(userChat,messageText,bot);
-            case WAITING_RESPONSE_FORM_COLABORAR -> waitingResponseFormColaborar(userChat,messageText,bot);
-            case DONADOR_VIANDA -> waitingResponseDonadorVianda(userChat,messageText,bot);
-            case DONADOR_DINERO -> waitingResponseDonadorDinero(userChat,messageText,bot);
-            case TRANSPORTADOR -> waitingResponseTransportador(userChat,messageText,bot);
-            case TECNICO -> waitingResponseTecnico(userChat,messageText,bot);
+            case START -> indicarNroColaborador(userChat,bot); //1RO
+            case COLABORADORID -> waitingResponseColaboradorId(userChat,messageText,bot);//2DO
+            case WAITING_RESPONSE_FORM_COLABORAR -> waitingResponseFormColaborar(userChat,messageText,bot);//3RO
+            case WAITING_RESPONSE_OPTION -> waitingResponseOpciones(userChat,messageText,bot);//4TO
+
+            //SEGUN LA OPCION ELEGIDA EN EL CASE ANTERIOR, IRA A ALGUNO DE LOS SIGUIENTES.
             case QRVIANDADEPOSITAR -> waitingResponseQRViandaDepositar(userChat,messageText,bot);
             case IDHELADERADEPOSITAR -> waitingResponseIDHeladeraDepositar(userChat,messageText,bot);
+
             case QRVIANDARETIRAR -> waitingResponseQRViandaRetirar(userChat,messageText,bot);
             case IDHELADERARETIRAR -> waitingResponseIDHeladeraRetirar(userChat,messageText,bot);
+
             case CREARVIANDA -> waitingResponseCrearVianda(userChat,messageText,bot);
+
             case IDHELADERAINCIDENCIA -> waitingResponseIDHeladeraIncidencia(userChat,messageText,bot);
             case IDREPARAR -> waitingResponseReparar(userChat,messageText,bot);
+            case IDHELADERAVERINCIDENCIAS -> waitingResponseVerIncidencias(userChat,messageText,bot);
         }
     }
 
@@ -115,25 +118,27 @@ public class MenuOpciones extends BotState {
         switch (messageText) {
             case "1" -> {
 
-                this.subState=SubState.DONADOR_VIANDA;
+                this.subState=SubState.WAITING_RESPONSE_OPTION;
                 menuOpcionesDonadorVianda(userChat,bot);
             }
             case "2" -> {
 
-                this.subState=SubState.TRANSPORTADOR;
+                this.subState=SubState.WAITING_RESPONSE_OPTION;
                 menuOpcionesTransportador(userChat,bot);
             }
             case "3" -> {
-                this.subState=SubState.TECNICO;
+                this.subState=SubState.WAITING_RESPONSE_STATION;
                 menuOpcionesTecnico(userChat,bot);
             }
             case "4" -> {
-                this.subState=SubState.DONADOR_DINERO;
+                this.subState=SubState.WAITING_RESPONSE_OPTION;
                 menuOpcionesDonadorDinero(userChat,bot);
             }
             default -> {
-                sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente las formas de colaborar");
+                sendMessage.setText("seleccionaste una opcion incorrecta \n");
                 bot.execute(sendMessage);
+                elegirFormaDeColaborar(userChat,bot);
+
                 //    this.subState=SubState.WAITING_RESPONSE_FORM_COLABORAR;
             }
         }
@@ -154,17 +159,16 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 5  ☞ Retirar vianda
                 6  ☞ Crear una incidencia (heladera rota)
                 7  ☞ Ver incidencias de una heladera
-                8  ☞ Ver heladeras de una zona
-                9  ☞ Ver la ocupacion de las viandas en una heladera
-                10 ☞ Ver los retiros del dia de una heladera
-                11 ☞ Suscribirse a los eventos de una heladera
-                12 ☞ Desuscribirse
-                13 ☞ Recibir informacion de dichos eventos
-                14 ☞ Cerrar una incidencia (activar heladera)
-                15 ☞ Dar de alta una ruta
-                16 ☞ Recibir mensaje que un traslado fue asignado al usuario
-                17 ☞ Iniciar traslado de vianda
-                18 ☞ Finalizar traslado de vianda
+                8  ☞ Ver la ocupacion de las viandas en una heladera
+                9 ☞ Ver los retiros del dia de una heladera
+                10 ☞ Suscribirse a los eventos de una heladera
+                11 ☞ Desuscribirse
+                12 ☞ Recibir informacion de dichos eventos
+                13 ☞ Cerrar una incidencia (activar heladera)
+                14 ☞ Dar de alta una ruta
+                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
+                16 ☞ Iniciar traslado de vianda
+                17 ☞ Finalizar traslado de vianda
                 """);
     try {
         bot.execute(response);
@@ -188,17 +192,16 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 5  ☞ Retirar vianda
                 6  ☞ Crear una incidencia (heladera rota)
                 7  ☞ Ver incidencias de una heladera
-                8  ☞ Ver heladeras de una zona
-                9  ☞ Ver la ocupacion de las viandas en una heladera
-                10 ☞ Ver los retiros del dia de una heladera
-                11 ☞ Suscribirse a los eventos de una heladera
-                12 ☞ Desuscribirse
-                13 ☞ Recibir informacion de dichos eventos
-                14 ☞ Cerrar una incidencia (activar heladera)
-                15 ☞ Dar de alta una ruta
-                16 ☞ Recibir mensaje que un traslado fue asignado al usuario
-                17 ☞ Iniciar traslado de vianda
-                18 ☞ Finalizar traslado de vianda
+                8  ☞ Ver la ocupacion de las viandas en una heladera
+                9 ☞ Ver los retiros del dia de una heladera
+                10 ☞ Suscribirse a los eventos de una heladera
+                11 ☞ Desuscribirse
+                12 ☞ Recibir informacion de dichos eventos
+                13 ☞ Cerrar una incidencia (activar heladera)
+                14 ☞ Dar de alta una ruta
+                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
+                16 ☞ Iniciar traslado de vianda
+                17 ☞ Finalizar traslado de vianda
                 """);
         try {
             bot.execute(response);
@@ -216,24 +219,23 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 Selecciono la forma de colaborar "Tecnico"
                 
                 Escriba el número de la opción deseada:
-                 1  ☞ Ver mis datos
+                1  ☞ Ver mis datos
                 2  ☞ Cambiar forma de colaborar
                 3  ☞ Crear vianda
                 4  ☞ Depositar vianda
                 5  ☞ Retirar vianda
                 6  ☞ Crear una incidencia (heladera rota)
                 7  ☞ Ver incidencias de una heladera
-                8  ☞ Ver heladeras de una zona
-                9  ☞ Ver la ocupacion de las viandas en una heladera
-                10 ☞ Ver los retiros del dia de una heladera
-                11 ☞ Suscribirse a los eventos de una heladera
-                12 ☞ Desuscribirse
-                13 ☞ Recibir informacion de dichos eventos
-                14 ☞ Cerrar una incidencia (activar heladera)
-                15 ☞ Dar de alta una ruta
-                16 ☞ Recibir mensaje que un traslado fue asignado al usuario
-                17 ☞ Iniciar traslado de vianda
-                18 ☞ Finalizar traslado de vianda
+                8  ☞ Ver la ocupacion de las viandas en una heladera
+                9 ☞ Ver los retiros del dia de una heladera
+                10 ☞ Suscribirse a los eventos de una heladera
+                11 ☞ Desuscribirse
+                12 ☞ Recibir informacion de dichos eventos
+                13 ☞ Cerrar una incidencia (activar heladera)
+                14 ☞ Dar de alta una ruta
+                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
+                16 ☞ Iniciar traslado de vianda
+                17 ☞ Finalizar traslado de vianda
  
                 """);
         try {
@@ -253,24 +255,23 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 Selecciono la forma de colaborar "Donador de dinero"
                 
                 Escriba el número de la opción deseada:
-                 1  ☞ Ver mis datos
+                1  ☞ Ver mis datos
                 2  ☞ Cambiar forma de colaborar
                 3  ☞ Crear vianda
                 4  ☞ Depositar vianda
                 5  ☞ Retirar vianda
                 6  ☞ Crear una incidencia (heladera rota)
                 7  ☞ Ver incidencias de una heladera
-                8  ☞ Ver heladeras de una zona
-                9  ☞ Ver la ocupacion de las viandas en una heladera
-                10 ☞ Ver los retiros del dia de una heladera
-                11 ☞ Suscribirse a los eventos de una heladera
-                12 ☞ Desuscribirse
-                13 ☞ Recibir informacion de dichos eventos
-                14 ☞ Cerrar una incidencia (activar heladera)
-                15 ☞ Dar de alta una ruta
-                16 ☞ Recibir mensaje que un traslado fue asignado al usuario
-                17 ☞ Iniciar traslado de vianda
-                18 ☞ Finalizar traslado de vianda
+                8  ☞ Ver la ocupacion de las viandas en una heladera
+                9 ☞ Ver los retiros del dia de una heladera
+                10 ☞ Suscribirse a los eventos de una heladera
+                11 ☞ Desuscribirse
+                12 ☞ Recibir informacion de dichos eventos
+                13 ☞ Cerrar una incidencia (activar heladera)
+                14 ☞ Dar de alta una ruta
+                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
+                16 ☞ Iniciar traslado de vianda
+                17 ☞ Finalizar traslado de vianda
                 """);
         try {
             bot.execute(response);
@@ -282,6 +283,63 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
     }
 
 
+
+
+
+/////////////////ESPERANDO RESPUESTA AL MENU/////////////////////////////
+private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) throws Exception{
+    SendMessage sendMessage = new SendMessage();
+    sendMessage.setChatId(userChat.toString());
+
+    switch (messageText) {
+        case "1" -> {
+            sendMessage.setText("seleccionaste la opcion 1");
+            bot.execute(sendMessage);
+        }
+        case "2" -> {
+            sendMessage.setText("seleccionaste la opcion cambiar forma de colaborar \n");
+
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+        case "3" -> {
+            sendMessage.setText("seleccionaste la opcion crear vianda. \n \n Por favor indicar el QR de la vianda");
+            bot.execute(sendMessage);
+            this.subState=SubState.CREARVIANDA;
+
+        }
+        case "4" -> {
+            sendMessage.setText("seleccionaste la opcion depositar vianda \n Por favor, escribe el qr de la vianda que deseas depositar.\"");
+            bot.execute(sendMessage);
+            this.subState=SubState.QRVIANDADEPOSITAR;
+        }
+        case "5" -> {
+            sendMessage.setText("seleccionaste la opcion retirar vianda \n Por favor, escribe el qr de la vianda que deseas retirar.");
+            bot.execute(sendMessage);
+            this.subState=SubState.QRVIANDARETIRAR;
+        }
+        case "6" -> {
+            sendMessage.setText("seleccionaste la opcion crear Incidencia \n \n Por favor indique el ID de la heladera a la que le hara la incidencia");
+            bot.execute(sendMessage);
+            this.subState=SubState.IDHELADERAINCIDENCIA;
+        }
+        case "7" -> {
+            sendMessage.setText("seleccionaste la opcion ver Incidencias de una heladera \n \n Por favor indique el ID de la heladera ");
+            bot.execute(sendMessage);
+            this.subState=SubState.IDHELADERAVERINCIDENCIAS;
+        }
+        case "13" -> {
+            sendMessage.setText("seleccionaste la opcion cerrar Incidencia \n\n Por favor indique el ID de la heladera a la que se le cerrara la incidencia");
+            bot.execute(sendMessage);
+            this.subState=SubState.IDREPARAR;
+        }
+        default -> {
+            sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente las formas de colaborar");
+            bot.execute(sendMessage);
+            this.subState=SubState.START;
+        }
+    }
+}
 
     ////////////DEPOSITAR VIANDA/////////////////////////////
     private void waitingResponseQRViandaDepositar(Long userChat, String messageText, Bot bot) throws Exception {
@@ -339,162 +397,8 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
         }
     }
 
-/////////////////ESPERANDO RESPUESTA SEGUN FORMA DE COLABORAR/////////////////////////////
-private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot bot) throws Exception{
-    SendMessage sendMessage = new SendMessage();
-    sendMessage.setChatId(userChat.toString());
 
-    switch (messageText) {
-        case "1" -> {
-            sendMessage.setText("seleccionaste la opcion 1");
-            bot.execute(sendMessage);
-        }
-        case "2" -> {
-            sendMessage.setText("seleccionaste la opcion 2");
-            this.subState=SubState.START;
-            bot.execute(sendMessage);
-            elegirFormaDeColaborar(userChat,bot);
-        }
-        case "3" -> {
-            sendMessage.setText("seleccionaste la opcion crear vianda. \n \n Por favor indicar el QR de la vianda");
-            bot.execute(sendMessage);
-            this.subState=SubState.CREARVIANDA;
-
-        }
-        case "4" -> {
-            sendMessage.setText("seleccionaste la opcion 4");
-            bot.execute(sendMessage);
-        }
-        case "5" -> {
-            sendMessage.setText("seleccionaste la opcion 5");
-            bot.execute(sendMessage);
-        }
-        case "6" -> {
-            sendMessage.setText("seleccionaste la opcion crear Incidencia \n \n Por favor indique el ID de la heladera a la que le hara la incidencia");
-            bot.execute(sendMessage);
-            this.subState=SubState.IDHELADERAINCIDENCIA;
-        }
-        default -> {
-            sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
-            bot.execute(sendMessage);
-            this.subState=SubState.START;
-        }
-    }
-}
-
-
-    private void waitingResponseTransportador(Long userChat,String messageText, Bot bot) throws Exception{
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(userChat.toString());
-
-        switch (messageText) {
-            case "1" -> {
-                sendMessage.setText("seleccionaste la opcion 1");
-                bot.execute(sendMessage);
-            }
-            case "2" -> {
-                sendMessage.setText("seleccionaste la opcion 2");
-                this.subState=SubState.START;
-                bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
-            }
-            case "3" -> {
-                sendMessage.setText("seleccionaste la opcion 3");
-                bot.execute(sendMessage);
-            }
-            case "4" -> {
-                sendMessage.setText("seleccionaste la opcion depositar vianda \n Por favor, escribe el qr de la vianda que deseas depositar.\"");
-                bot.execute(sendMessage);
-                this.subState=SubState.QRVIANDADEPOSITAR;
-            }
-            case "5" -> {
-                sendMessage.setText("seleccionaste la opcion retirar vianda \n Por favor, escribe el qr de la vianda que deseas retirar.");
-                bot.execute(sendMessage);
-                this.subState=SubState.QRVIANDARETIRAR;
-            }
-            default -> {
-                sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
-                bot.execute(sendMessage);
-                this.subState=SubState.START;
-            }
-        }
-    }
-
-    private void waitingResponseTecnico(Long userChat, String messageText, Bot bot)throws Exception {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(userChat.toString());
-
-        switch (messageText) {
-            case "1" -> {
-                sendMessage.setText("seleccionaste la opcion 1");
-                bot.execute(sendMessage);
-            }
-            case "2" -> {
-                sendMessage.setText("seleccionaste la opcion ''Cambiar forma de colaborar'' \n");
-                this.subState=SubState.START;
-                bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
-
-            }
-            case "3" -> {
-                sendMessage.setText("seleccionaste la opcion 3");
-                bot.execute(sendMessage);
-            }
-            case "4" -> {
-                sendMessage.setText("seleccionaste la opcion 4");
-                bot.execute(sendMessage);
-            }
-            case "5" -> {
-                sendMessage.setText("seleccionaste la opcion 5");
-                bot.execute(sendMessage);
-            }
-            case "14" -> {
-                sendMessage.setText("seleccionaste la opcion cerrar Incidencia \n\n Por favor indique el ID de la heladera a la que se le cerrara la incidencia");
-                bot.execute(sendMessage);
-                this.subState=SubState.IDREPARAR;
-            }
-            default -> {
-                sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
-                bot.execute(sendMessage);
-                this.subState=SubState.START;
-            }
-        }
-    }
-
-    private void waitingResponseDonadorDinero(Long userChat,String messageText, Bot bot)throws Exception {
-        SendMessage sendMessage = new SendMessage();
-        sendMessage.setChatId(userChat.toString());
-
-        switch (messageText) {
-            case "1" -> {
-                sendMessage.setText("seleccionaste la opcion 1");
-                bot.execute(sendMessage);
-            }
-            case "2" -> {
-                sendMessage.setText("seleccionaste la opcion 2");
-                this.subState=SubState.START;
-                bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
-            }
-            case "3" -> {
-                sendMessage.setText("seleccionaste la opcion 3");
-                bot.execute(sendMessage);
-            }
-            case "4" -> {
-                sendMessage.setText("seleccionaste la opcion 4");
-                bot.execute(sendMessage);
-            }
-            case "5" -> {
-                sendMessage.setText("seleccionaste la opcion 5");
-                bot.execute(sendMessage);
-            }
-            default -> {
-                sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
-                bot.execute(sendMessage);
-                this.subState=SubState.START;
-            }
-        }
-    }
+   ///////////////////CREAR VIANDA/////////////////////////
 
     private void waitingResponseCrearVianda(Long userChat, String messageText, Bot bot) throws Exception {
         SendMessage sendMessage = new SendMessage();
@@ -514,7 +418,7 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
         }
 
     }
-
+///////////////////////CREARINCIDENCIA///////////////////////////////////
     private void waitingResponseIDHeladeraIncidencia(Long userChat, String messageText, Bot bot) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
@@ -531,6 +435,7 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
             elegirFormaDeColaborar(userChat,bot);
         }
     }
+    ///////////////////REPARAR/////////////////////////////
     private void waitingResponseReparar(Long userChat, String messageText, Bot bot) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
@@ -538,6 +443,25 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
         try {
             fachadaHeladeras.repararIncidente(Long.valueOf(messageText));
             sendMessage.setText("Se reparo la heladera ID: "+messageText+" correctamente. \n Para volver al inicio presione cualquier tecla");
+            bot.execute(sendMessage);
+            this.subState=SubState.START;
+
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+    }
+
+    /////////////////////////VER INCIDENCIAS/////////////////////////////////
+    private void waitingResponseVerIncidencias(Long userChat, String messageText, Bot bot) throws TelegramApiException {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+
+        try {
+            var respuesta = fachadaHeladeras.verIncidencias(Long.parseLong(messageText));
+            sendMessage.setText(respuesta.getAlertas().toString());
+            //sendMessage.setText(" \n Para volver al inicio presione cualquier tecla");
             bot.execute(sendMessage);
             this.subState=SubState.START;
 
