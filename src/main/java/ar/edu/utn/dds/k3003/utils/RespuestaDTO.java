@@ -9,6 +9,7 @@ public class RespuestaDTO {
     private String message;
     private Object data;
 
+    public RespuestaDTO(){}
     public RespuestaDTO(Integer status, String message, Object data) {
         this.status = status;
         this.message = message;

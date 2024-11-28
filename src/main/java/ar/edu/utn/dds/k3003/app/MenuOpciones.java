@@ -41,9 +41,9 @@ public class MenuOpciones extends BotState {
             case IDHELADERARETIRAR -> waitingResponseIDHeladeraRetirar(userChat,messageText,bot);
             case CREARVIANDA -> waitingResponseCrearVianda(userChat,messageText,bot);
             case IDHELADERAINCIDENCIA -> waitingResponseIDHeladeraIncidencia(userChat,messageText,bot);
+            case IDREPARAR -> waitingResponseReparar(userChat,messageText,bot);
         }
     }
-
 
 
 
@@ -448,6 +448,11 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
                 sendMessage.setText("seleccionaste la opcion 5");
                 bot.execute(sendMessage);
             }
+            case "14" -> {
+                sendMessage.setText("seleccionaste la opcion cerrar Incidencia \n\n Por favor indique el ID de la heladera a la que se le cerrara la incidencia");
+                bot.execute(sendMessage);
+                this.subState=SubState.IDREPARAR;
+            }
             default -> {
                 sendMessage.setText("seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente el menu");
                 bot.execute(sendMessage);
@@ -517,6 +522,22 @@ private void waitingResponseDonadorVianda(Long userChat,String messageText, Bot 
         try {
             var respuesta = fachadaHeladeras.crearIncidencia(Long.valueOf(messageText));
             sendMessage.setText(respuesta.getMessage() + " \n Para volver al inicio presione cualquier tecla");
+            bot.execute(sendMessage);
+            this.subState=SubState.START;
+
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+    }
+    private void waitingResponseReparar(Long userChat, String messageText, Bot bot) throws TelegramApiException {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+
+        try {
+            fachadaHeladeras.repararIncidente(Long.valueOf(messageText));
+            sendMessage.setText("Se reparo la heladera ID: "+messageText+" correctamente. \n Para volver al inicio presione cualquier tecla");
             bot.execute(sendMessage);
             this.subState=SubState.START;
 

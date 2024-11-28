@@ -25,4 +25,5 @@ public interface FachadaHeladeras {
     void setViandasProxy(FachadaViandas var1);
 
     RespuestaDTO crearIncidencia(Long id_heladera);
+     void repararIncidente(Long id_heladera);
 }

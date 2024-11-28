@@ -104,5 +104,19 @@ public class HeladerasProxy implements FachadaHeladeras {
         throw new NoSuchElementException("No se pudo crear la Incidencia para la heladera ID: "+id_heladera);
     }
 }
+    @SneakyThrows
+    public void repararIncidente(Long id_heladera){
+        Response<Void> execute = service.reparar(id_heladera).execute();
+
+        if(execute.isSuccessful()){
+          execute.body();
+
+        }
+
+        else {
+            throw new NoSuchElementException("No se pudo reparar la heladera ID: "+id_heladera);
+        }
+    }
+
 
 }

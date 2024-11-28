@@ -6,6 +6,7 @@ import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import ar.edu.utn.dds.k3003.utils.RespuestaDTO;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.PATCH;
 import retrofit2.http.POST;
 import retrofit2.http.Path;
 
@@ -19,4 +20,7 @@ public interface HeladerasRetrofitClient {
 
     @POST("heladeras/{id}/falla")
     Call<RespuestaDTO> reportarFalla(@Path("id") Long heladera_id);
+
+    @PATCH("/heladeras/{id}/reparar")
+    Call<Void> reparar(@Path("id") Long heladera_id);
 }
