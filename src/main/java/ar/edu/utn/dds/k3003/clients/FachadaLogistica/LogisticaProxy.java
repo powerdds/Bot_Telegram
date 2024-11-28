@@ -1,12 +1,15 @@
 package ar.edu.utn.dds.k3003.clients.FachadaLogistica;
 
+import ar.edu.utn.dds.k3003.clients.FachadaColaboradores.ColaboradoresProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.RutaDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.TrasladoDTO;
 import ar.edu.utn.dds.k3003.facades.exceptions.TrasladoNoAsignableException;
+import ar.edu.utn.dds.k3003.utils.ObjectMapperHelper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.javalin.http.BadRequestResponse;
 import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
 import retrofit2.Response;
@@ -22,7 +25,10 @@ public class LogisticaProxy implements FachadaLogistica {
 
     private final String endpoint;
     private final LogisticaRetrofitClient service;
-    public LogisticaProxy(ObjectMapper objectMapper) {
+
+    private static LogisticaProxy instance;
+
+    public LogisticaProxy() {
 
         var env = System.getenv();
         this.endpoint = env.getOrDefault("URL_LOGISTICA", "http://localhost:8081/");
@@ -30,14 +36,30 @@ public class LogisticaProxy implements FachadaLogistica {
         var retrofit =
                 new Retrofit.Builder()
                         .baseUrl(this.endpoint)
-                        .addConverterFactory(JacksonConverterFactory.create(objectMapper))
+                        .addConverterFactory(JacksonConverterFactory.create(ObjectMapperHelper.createObjectMapper()))
                         .build();
 
         this.service = retrofit.create(LogisticaRetrofitClient.class);
     }
 
+    public static LogisticaProxy getInstance() {
+        if (instance == null) {
+            instance = new LogisticaProxy();
+        }
+        return instance;
+    }
+    @SneakyThrows
+    @Override
+    public RutaDTO agregar(RutaDTO rutaDTO){
+        Response<RutaDTO> execute = service.agregarRuta(rutaDTO).execute();
 
-    public RutaDTO agregar(RutaDTO var1){return null;}
+        if(execute.isSuccessful()){
+            return execute.body();
+        }
+        else {
+            throw new BadRequestResponse("No se pudo agregar la ruta");
+        }
+    }
 
     public TrasladoDTO buscarXId(Long var1) throws NoSuchElementException
     {return null;}

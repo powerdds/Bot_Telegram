@@ -3,8 +3,10 @@ package ar.edu.utn.dds.k3003.app;
 import ar.edu.utn.dds.k3003.clients.FachadaColaboradores.ColaboradoresProxy;
 import ar.edu.utn.dds.k3003.clients.FachadaHeladera.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.clients.FachadaHeladera.HeladerasProxy;
+import ar.edu.utn.dds.k3003.clients.FachadaLogistica.LogisticaProxy;
 import ar.edu.utn.dds.k3003.clients.FachadaViandas.ViandasProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaColaboradores;
+import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
@@ -22,6 +24,7 @@ public class MenuOpciones extends BotState {
     private final FachadaHeladeras fachadaHeladeras= HeladerasProxy.getInstance();
     private final FachadaColaboradores fachadaColaboradores= ColaboradoresProxy.getInstance();
 
+    private final FachadaLogistica fachadaLogistica = LogisticaProxy.getInstance();
     private final FachadaViandas fachadaViandas = ViandasProxy.getInstance();
 
 
@@ -41,7 +44,7 @@ public class MenuOpciones extends BotState {
             case IDHELADERARETIRAR -> waitingResponseIDHeladeraRetirar(userChat,messageText,bot);
 
             case CREARVIANDA -> waitingResponseCrearVianda(userChat,messageText,bot);
-
+            case AGREGARRUTA -> waitingResponseAgregarRuta(userChat, messageText, bot);
             case IDHELADERAINCIDENCIA -> waitingResponseIDHeladeraIncidencia(userChat,messageText,bot);
             case IDREPARAR -> waitingResponseReparar(userChat,messageText,bot);
             case IDHELADERAVERINCIDENCIAS -> waitingResponseVerIncidencias(userChat,messageText,bot);
@@ -110,6 +113,7 @@ public class MenuOpciones extends BotState {
             throw new RuntimeException(e);
         }
     }
+
     private void waitingResponseFormColaborar(Long userChat, String messageText, Bot bot) throws Exception{
 
         SendMessage sendMessage = new SendMessage();
@@ -471,4 +475,16 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             elegirFormaDeColaborar(userChat,bot);
         }
     }
+
+    /////////////////////////AGREGAR RUTAS/////////////////////////////////
+   private void waitingResponseAgregarRuta(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+
+        try {
+
+        } catch (Exception e){
+
+        }
+   }
 }
