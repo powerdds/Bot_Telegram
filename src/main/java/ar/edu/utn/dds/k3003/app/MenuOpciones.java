@@ -34,7 +34,7 @@ public class MenuOpciones extends BotState {
 
     private final FachadaLogistica fachadaLogistica = LogisticaProxy.getInstance();
     private final FachadaViandas fachadaViandas = ViandasProxy.getInstance();
-
+    private String formaColaborarElegida;
 
 
     public void execute(Long userChat, String messageText, Bot bot) throws Exception {
@@ -96,7 +96,7 @@ public class MenuOpciones extends BotState {
         sendMessage.setChatId(userChat.toString());
         colaborador_id=Long.parseLong(messageText);
         try {
-            //fachadaColaboradores.buscarXId(colaborador_id);
+            fachadaColaboradores.buscarXId(colaborador_id);
             //ver si es un colaborador existente
             sendMessage.setText("Bienvenido Colaborador "+colaborador_id+ " =D \n");
             bot.execute(sendMessage);
@@ -104,7 +104,7 @@ public class MenuOpciones extends BotState {
         } catch (Exception e){
             sendMessage.setText(e.getMessage());
             bot.execute(sendMessage);
-            elegirFormaDeColaborar(userChat,bot);
+            indicarNroColaborador(userChat,bot);
         }
     }
 
@@ -141,19 +141,23 @@ public class MenuOpciones extends BotState {
             case "1" -> {
 
                 this.subState=SubState.WAITING_RESPONSE_OPTION;
+                formaColaborarElegida=messageText;
                 menuOpcionesDonadorVianda(userChat,bot);
             }
             case "2" -> {
 
                 this.subState=SubState.WAITING_RESPONSE_OPTION;
+                formaColaborarElegida=messageText;
                 menuOpcionesTransportador(userChat,bot);
             }
             case "3" -> {
                 this.subState=SubState.WAITING_RESPONSE_STATION;
+                formaColaborarElegida=messageText;
                 menuOpcionesTecnico(userChat,bot);
             }
             case "4" -> {
                 this.subState=SubState.WAITING_RESPONSE_OPTION;
+                formaColaborarElegida=messageText;
                 menuOpcionesDonadorDinero(userChat,bot);
             }
             default -> {
@@ -541,10 +545,10 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         sendMessage.setChatId(userChat.toString());
         try{
             fachadaColaboradores.modificar(colaborador_id,forma);
-            sendMessage.setText("Se cambiaron exitosamente las formas de colaborar");
+            sendMessage.setText("Se cambiaron exitosamente las formas de colaborar \n \n");
             bot.execute(sendMessage);
             forma = new FormaDeColaborar();
-            this.subState=SubState.START;
+            waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
         } catch (Exception e) {
             sendMessage.setText(e.getMessage());
             bot.execute(sendMessage);

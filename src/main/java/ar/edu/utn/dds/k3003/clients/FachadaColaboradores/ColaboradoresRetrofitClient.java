@@ -2,7 +2,7 @@ package ar.edu.utn.dds.k3003.clients.FachadaColaboradores;
 
 //import ar.edu.utn.dds.k3003.model.controller.dtos.AlertaDTO;
 //import ar.edu.utn.dds.k3003.model.controller.dtos.ColaboradorDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
+import ar.edu.utn.dds.k3003.utils.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
 import retrofit2.Call;
 import retrofit2.http.*;

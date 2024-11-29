@@ -4,9 +4,10 @@ package ar.edu.utn.dds.k3003.clients.FachadaColaboradores;
 import ar.edu.utn.dds.k3003.facades.FachadaColaboradores;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
-import ar.edu.utn.dds.k3003.facades.dtos.ColaboradorDTO;
+
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.utils.AlertaDTO;
+import ar.edu.utn.dds.k3003.utils.ColaboradorDTO;
 import ar.edu.utn.dds.k3003.utils.ObjectMapperHelper;
 import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
