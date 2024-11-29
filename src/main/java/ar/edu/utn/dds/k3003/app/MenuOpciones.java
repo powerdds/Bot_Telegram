@@ -67,6 +67,7 @@ public class MenuOpciones extends BotState {
             case FINALIZARTRASLADO -> waitingResponseFinalizarTraslado(userChat,messageText,bot);
             case FORMASCOLABORAR -> waitingResponsePedirFormaColaborar(userChat,messageText,bot);
             //case FORMASAGREGADAS -> waitingResponseCambiarFormaColaborar(userChat,messageText,bot);
+            case REALIZARDONACION -> waitingResponseRealizarDonacion(userChat,messageText,bot);
             case CANTIDADVIANDAS -> waitingResponseCantidadViandas(userChat,messageText,bot);
             case CANTIDADRETIROS -> waitingResponseCantidadRetiros(userChat,messageText,bot);
             case SUSCRIBIRSE -> waitingResponseSuscribirse(userChat,messageText,bot);
@@ -486,7 +487,9 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         }
         case "18" -> {
             if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
-                //agregar lo que se debe hacer.
+                sendMessage.setText("Seleccionaste realizar una donacion \n\n Por favor indique la cantidad de dinero a donar");
+                bot.execute(sendMessage);
+                this.subState = SubState.REALIZARDONACION;
             }
             else {
                 sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
@@ -527,12 +530,13 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
 }
 
     //////////////////VER INFO COLABORADOR ///////////////////////////
+    // DESCOMENTAR PUNTOS
     private void waitingResponseDatosColaboradorId (Long userChat, Bot bot) throws Exception {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
         try {
             var respuesta = fachadaColaboradores.buscarXId(colaborador_id);
-            var puntos = fachadaColaboradores.puntos(colaborador_id,11,2024);
+            var puntos = 0L;//fachadaColaboradores.puntos(colaborador_id,11,2024); //DESCOMENTAR
 
             //var respuesta = fachadaHeladeras.verIncidencias(Long.parseLong(messageText));
             //sendMessage.setText(respuesta.getAlertas().toString());
@@ -836,7 +840,7 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             SuscripcionDTO s = new SuscripcionDTO(Math.toIntExact(colaborador_id),10,2,true);
             fachadaHeladeras.agregarSuscriptor(Integer.parseInt(messageText),s);
 
-            sendMessage.setText("Se a suscrito a la heladera "+Integer.parseInt(messageText));
+            sendMessage.setText("Se ha suscrito a la heladera "+Integer.parseInt(messageText));
             bot.execute(sendMessage);
             waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
 
@@ -889,6 +893,8 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         try{
             sendMessage.setText("Indicó que retirará la vianda asignada al traslado de id '"+ messageText);
             fachadaLogistica.trasladoRetirado(Long.parseLong(messageText));
+            bot.execute(sendMessage);
+            waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
         } catch (Exception e){
             sendMessage.setText(e.getMessage());
             bot.execute(sendMessage);
@@ -902,10 +908,29 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         try{
             sendMessage.setText("Indicó que depositará la vianda asignada al traslado de id '"+ messageText);
             fachadaLogistica.trasladoDepositado(Long.parseLong(messageText));
+            bot.execute(sendMessage);
+            waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
         } catch (Exception e){
             sendMessage.setText(e.getMessage());
             bot.execute(sendMessage);
             elegirFormaDeColaborar(userChat,bot);
         }
     }
-}
+
+    private void waitingResponseRealizarDonacion(Long userChat, String messageText, Bot bot) throws TelegramApiException {
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        try{
+            sendMessage.setText("Indicó que donará " + messageText + " pesos");
+            bot.execute(sendMessage);
+            fachadaColaboradores.donar(colaborador_id , Integer.parseInt(messageText));
+            sendMessage.setText("Se realizó exitosamente la donación");
+            bot.execute(sendMessage);
+            waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+        }
+    }

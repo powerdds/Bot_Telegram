@@ -8,6 +8,7 @@ import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.utils.AlertaDTO;
 import ar.edu.utn.dds.k3003.utils.ColaboradorDTO;
+import ar.edu.utn.dds.k3003.utils.DonacionDTO;
 import ar.edu.utn.dds.k3003.utils.ObjectMapperHelper;
 import io.javalin.http.HttpStatus;
 import lombok.SneakyThrows;
@@ -16,6 +17,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -107,15 +109,35 @@ public class ColaboradoresProxy {
     @SneakyThrows
     public void repararHeladera(Long colaboradorId , Long heladeraId) throws NoSuchElementException {
         Response<Void> execute = service.repararHeladera(colaboradorId,heladeraId).execute();
-
+        try{
         if (execute.isSuccessful()) {
             execute.body();
         }
         if (execute.code() == HttpStatus.NOT_ACCEPTABLE.getCode()) {
             throw new NoSuchElementException("no se pudo modificar al colaborador");
         }
-        throw new RuntimeException("Error conectandose con el componente colaboradores");
+        }
+        catch (NoSuchElementException e){
+            throw new RuntimeException("Error conectandose con el componente colaboradores");
+        }
     }
 
+    @SneakyThrows
+    public void donar(Long colaboradorId, int valor) throws NoSuchElementException{
+        DonacionDTO donacionDTO = new DonacionDTO(valor,new Date());
+        Response<ColaboradorDTO> execute = service.donar(colaboradorId ,donacionDTO ).execute();
+
+        try {
+            if (execute.isSuccessful()) {
+             execute.body();
+        }
+            if (execute.code() == HttpStatus.NOT_ACCEPTABLE.getCode()) {
+                throw new NoSuchElementException("no se pudo realizar la donacion");
+            }
+        }
+        catch (NoSuchElementException e){
+        throw new RuntimeException("Error conectandose con el componente colaboradores");
+        }
+    }
 
 }
