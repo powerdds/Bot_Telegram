@@ -35,7 +35,8 @@ public class MenuOpciones extends BotState {
 
     private final FachadaLogistica fachadaLogistica = LogisticaProxy.getInstance();
     private final FachadaViandas fachadaViandas = ViandasProxy.getInstance();
-    private String formaColaborarElegida;
+    private String formaColaborarElegida=new String();
+    private String nombreFormaColaborarElegida;
 
 
     public void execute(Long userChat, String messageText, Bot bot) throws Exception {
@@ -148,6 +149,7 @@ public class MenuOpciones extends BotState {
 
                 this.subState=SubState.WAITING_RESPONSE_OPTION;
                 formaColaborarElegida=messageText;
+                nombreFormaColaborarElegida="DONADORVIANDA";
                 menuOpcionesDonadorVianda(userChat,bot);}
                else {
                    sendMessage.setText("No contiene este tipo de forma de colaborar");
@@ -159,6 +161,7 @@ public class MenuOpciones extends BotState {
                 if( colaborador.getFormas().contains(FormaDeColaborarEnum.TRANSPORTADOR)){
                 this.subState=SubState.WAITING_RESPONSE_OPTION;
                 formaColaborarElegida=messageText;
+                nombreFormaColaborarElegida="TRANSPORTADOR";
                 menuOpcionesTransportador(userChat,bot);}
                 else {
                     sendMessage.setText("No contiene este tipo de forma de colaborar");
@@ -170,6 +173,7 @@ public class MenuOpciones extends BotState {
                 if( colaborador.getFormas().contains(FormaDeColaborarEnum.TECNICO)){
                 this.subState=SubState.WAITING_RESPONSE_OPTION;
                 formaColaborarElegida=messageText;
+                nombreFormaColaborarElegida="TECNICO";
                 menuOpcionesTecnico(userChat,bot);}
                 else {
                     sendMessage.setText("No contiene este tipo de forma de colaborar");
@@ -178,9 +182,10 @@ public class MenuOpciones extends BotState {
                 }
             }
             case "4" -> {
-                if( colaborador.getFormas().contains(FormaDeColaborarEnum.TECNICO)){
+                if( colaborador.getFormas().contains(FormaDeColaborarEnum.DONADORDINERO)){
                 this.subState=SubState.WAITING_RESPONSE_OPTION;
                 formaColaborarElegida=messageText;
+                nombreFormaColaborarElegida="DONADORDINERO";
                 menuOpcionesDonadorDinero(userChat,bot);}
                 else {
                     sendMessage.setText("No contiene este tipo de forma de colaborar");
@@ -349,46 +354,46 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             elegirFormaDeColaborar(userChat,bot);
         }
         case "3" -> {
-            if(FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.DONADORVIANDA)){
+            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORVIANDA.name())){
                 sendMessage.setText("Seleccionaste la opcion crear vianda. \n \n Por favor indicar el QR de la vianda");
                 bot.execute(sendMessage);
                 this.subState = SubState.CREARVIANDA;
             }
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
             }
 
 
         }
         case "4" -> {
-            if(!FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.TECNICO) &&
-                    !FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.DONADORDINERO)){
+            if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) &&
+                    !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
 
                 sendMessage.setText("Seleccionaste la opcion depositar vianda \n Por favor, escribe el qr de la vianda que deseas depositar.\"");
                 bot.execute(sendMessage);
                 this.subState = SubState.QRVIANDADEPOSITAR;
             }
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
             }
 
         }
         case "5" -> {
-            if(!FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.TECNICO) &&
-                    !FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.DONADORDINERO)){
+            if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) &&
+                    !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
 
                 sendMessage.setText("Seleccionaste la opcion retirar vianda \n Por favor, escribe el qr de la vianda que deseas retirar.");
             bot.execute(sendMessage);
             this.subState=SubState.QRVIANDARETIRAR;
             }
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
             }
         }
         case "6" -> {
@@ -419,30 +424,33 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             bot.execute(sendMessage);
             this.subState=SubState.DESUSCRIBIRSE;
         }
+        case "12" -> {
+            ///todo
+        }
 
         case "13" -> {
-            if(FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.TRANSPORTADOR) ){
+            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) ){
 
             sendMessage.setText("Seleccionaste la opcion cerrar Incidencia \n\n Por favor indique el ID de la heladera a la que se le cerrara la incidencia");
             bot.execute(sendMessage);
             this.subState=SubState.IDREPARAR;}
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
             }
         }
         case "14" -> {
-            if(!FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.DONADORVIANDA) &&
-                !FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.TECNICO)){
+            if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORVIANDA.name()) &&
+                !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name())){
                 sendMessage.setText("seleccionaste la opcion agregar ruta \n\n Por favor indique el ID de la heladeras Origen");
                 bot.execute(sendMessage);
                 this.subState = SubState.AGREGARRUTA;
             }
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
             }
         }
         case "15" -> {
@@ -450,35 +458,35 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         }
 
         case "16" -> {
-            if(FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.TRANSPORTADOR)){
+            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())){
                 sendMessage.setText("Seleccionaste iniciar traslado \n\n Por favor indique el QRVianda que trasladará");
                 bot.execute(sendMessage);
                 this.subState = SubState.INICIARTRASLADO;
             }
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
                 elegirFormaDeColaborar(userChat,bot);
             }
         }
         case "17" ->{
-            if(!FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.TRANSPORTADOR)) {
+            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())) {
             //agregar lo que se debe hacer.
             }
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
             }
         }
         case "18" -> {
-            if(FormaDeColaborarEnum.valueOf(formaColaborarElegida).equals(FormaDeColaborarEnum.DONADORDINERO)){
+            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
                 //agregar lo que se debe hacer.
             }
             else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+FormaDeColaborarEnum.valueOf(formaColaborarElegida));
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
-                elegirFormaDeColaborar(userChat,bot);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
             }
         }
 
