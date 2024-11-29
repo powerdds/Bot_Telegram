@@ -14,10 +14,11 @@ import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.jackson.JacksonConverterFactory;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-public class ColaboradoresProxy implements FachadaColaboradores {
+public class ColaboradoresProxy {
 
     private final String endpoint;
     private final ColaboradoresRetrofitClient service;
@@ -42,11 +43,6 @@ public class ColaboradoresProxy implements FachadaColaboradores {
             instance = new ColaboradoresProxy();
         }
         return instance;
-    }
-
-    @Override
-    public ColaboradorDTO agregar(ColaboradorDTO colaboradorDTO) {
-        return null;
     }
 
     /*
@@ -78,29 +74,47 @@ public class ColaboradoresProxy implements FachadaColaboradores {
         throw new RuntimeException("Error conectandose con el componente colaboradores");
     }
 
-    @Override
-    public Double puntos(Long aLong) throws NoSuchElementException {
-        return null;
+    @SneakyThrows
+    public Double puntos(Long aLong,Integer mes , Integer anio) throws NoSuchElementException {
+        Response<Double> execute = service.puntosColaborador(aLong,mes,anio).execute();
+
+        if (execute.isSuccessful()) {
+            return execute.body();
+        }
+        if (execute.code() == HttpStatus.NOT_ACCEPTABLE.getCode()) {
+            throw new NoSuchElementException("no se pueden calcular los puntos del colaborador de id: " + aLong);
+        }
+        throw new RuntimeException("Error conectandose con el componente colaboradores");
     }
 
-    @Override
-    public ColaboradorDTO modificar(Long aLong, List<FormaDeColaborarEnum> list) throws NoSuchElementException {
-        return null;
+
+    //public ColaboradorDTO modificar(Long aLong,List<FormaDeColaborarEnum> list) throws NoSuchElementException {return null;}
+
+    @SneakyThrows
+    public ColaboradorDTO modificar(Long aLong,FormaDeColaborar list) throws NoSuchElementException {
+        Response<?> execute = service.patchColaborador(aLong,list).execute();
+
+        if (execute.isSuccessful()) {
+            return (ColaboradorDTO) execute.body(); //devuelve un ColaboradorDTO
+        }
+        if (execute.code() == HttpStatus.NOT_ACCEPTABLE.getCode()) {
+            throw new NoSuchElementException("no se pudo modificar al colaborador");
+        }
+        throw new RuntimeException("Error conectandose con el componente colaboradores");
     }
 
-    @Override
-    public void actualizarPesosPuntos(Double aDouble, Double aDouble1, Double aDouble2, Double aDouble3, Double aDouble4) {
+    @SneakyThrows
+    public void repararHeladera(Long colaboradorId , Long heladeraId) throws NoSuchElementException {
+        Response<Void> execute = service.repararHeladera(colaboradorId,heladeraId).execute();
 
+        if (execute.isSuccessful()) {
+            execute.body();
+        }
+        if (execute.code() == HttpStatus.NOT_ACCEPTABLE.getCode()) {
+            throw new NoSuchElementException("no se pudo modificar al colaborador");
+        }
+        throw new RuntimeException("Error conectandose con el componente colaboradores");
     }
 
-    @Override
-    public void setLogisticaProxy(FachadaLogistica fachadaLogistica) {
-
-    }
-
-    @Override
-    public void setViandasProxy(FachadaViandas fachadaViandas) {
-
-    }
 
 }
