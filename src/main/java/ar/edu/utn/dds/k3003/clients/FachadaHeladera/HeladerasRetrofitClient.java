@@ -26,4 +26,12 @@ public interface HeladerasRetrofitClient {
     Call<Void> reparar(@Path("id") Long heladera_id);
     @GET("/heladeras/{id}/alertas")
     Call<AlertaHeladeraDTO> getAlertas(@Path("id") Long heladera_id);
+    @GET("/heladeras/{id}/retirosDelDia")
+    Call<List<RegistroRetiroDTO>> getRetirosDelDia(@Path("id") Long heladera_id);
+
+    @POST("/heladeras/{id}/suscribir")
+    Call<Void> suscribirse(@Path("id") Long heladera, @Body SuscripcionDTO suscripcionDTO);
+
+    @DELETE("/heladeras/{heladera_id}/suscribir/{colaborador_id}")
+    Call<Void> desuscribirse(@Path("heladera_id") Long heladera, @Path("colaborador_id") Long colaborador_id);
 }

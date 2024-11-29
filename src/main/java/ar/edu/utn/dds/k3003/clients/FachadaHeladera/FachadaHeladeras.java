@@ -4,7 +4,6 @@ import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.HeladeraDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
 import ar.edu.utn.dds.k3003.facades.dtos.TemperaturaDTO;
-import ar.edu.utn.dds.k3003.utils.AlertaDTO;
 import ar.edu.utn.dds.k3003.utils.AlertaHeladeraDTO;
 import ar.edu.utn.dds.k3003.utils.RespuestaDTO;
 
@@ -29,4 +28,8 @@ public interface FachadaHeladeras {
     RespuestaDTO crearIncidencia(Long id_heladera);
      void repararIncidente(Long id_heladera);
      AlertaHeladeraDTO verIncidencias(Long id_heladera);
+     void agregarSuscriptor(Integer id, SuscripcionDTO suscripcionDTO);
+     void eliminarSuscriptor(Integer heladeraId, Integer colaboradorId);
+     List<RegistroRetiroDTO> registrosDelDia(Integer heladeraId);
+
 }

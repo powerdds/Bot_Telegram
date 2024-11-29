@@ -133,5 +133,43 @@ public class HeladerasProxy implements FachadaHeladeras {
             throw new NoSuchElementException("No se pudo reparar la heladera ID: "+id_heladera);
         }
     }
+    @SneakyThrows
+    @Override
+    public void agregarSuscriptor(Integer id, SuscripcionDTO suscripcionDTO) {
+        Response<Void> execute = service.suscribirse(Long.valueOf(id),suscripcionDTO).execute();
+
+        if(!execute.isSuccessful()){
+
+            throw new NoSuchElementException("No se pudo realizar la operacion: "+id);
+
+        }
+
+    }
+    @SneakyThrows
+    @Override
+    public void eliminarSuscriptor(Integer heladeraId, Integer colaboradorId) {
+        Response<Void> execute = service.desuscribirse(Long.valueOf(heladeraId), Long.valueOf(colaboradorId)).execute();
+
+        if(!execute.isSuccessful()){
+
+            throw new NoSuchElementException("No se pudo realizar la operacion: ");
+
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    public List<RegistroRetiroDTO> registrosDelDia(Integer heladeraId) {
+        Response<List<RegistroRetiroDTO>> execute = service.getRetirosDelDia(Long.valueOf(heladeraId)).execute();
+
+        if(execute.isSuccessful()){
+            return execute.body();
+
+        }
+
+        else {
+            throw new NoSuchElementException("No se se encontro la heladera: "+heladeraId);
+        }
+    }
 
 }
