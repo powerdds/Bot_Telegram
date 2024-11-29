@@ -194,6 +194,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 12 ☞ Recibir informacion de dichos eventos
                 15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 19 ☞ Cambiar forma de colaborar
+                20 ☞ Cerrar Sesion
                 
                 """);
     try {
@@ -227,6 +228,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 16 ☞ Iniciar traslado de vianda
                 17 ☞ Finalizar traslado de vianda
                 19 ☞ Cambiar forma de colaborar
+                20 ☞ Cerrar Sesion
                 
                 """);
         try {
@@ -257,6 +259,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 13 ☞ Cerrar una incidencia (activar heladera)
                 15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 19 ☞ Cambiar forma de colaborar
+                20 ☞ Cerrar Sesion
                 
                 """);
         try {
@@ -289,6 +292,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 18 ☞ Realizar una donacion
                 19 ☞ Cambiar forma de colaborar
+                20 ☞ Cerrar Sesion
                 
                 """);
         try {
@@ -381,6 +385,12 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             sendMessage.setText("Seleccionaste la opcion cambiar forma de colaborar \n\n Escriba la forma de colaborar deseada (una sola).");
             bot.execute(sendMessage);
             this.subState=SubState.FORMASCOLABORAR;
+        }
+        case "20" -> {
+            sendMessage.setText("Cerrando sesion como Colaborador "+colaborador_id+ "\n\n ");
+            bot.execute(sendMessage);
+            indicarNroColaborador(userChat,bot);
+
         }
         default -> {
             sendMessage.setText("Seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente las formas de colaborar");
