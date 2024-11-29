@@ -10,10 +10,7 @@ import ar.edu.utn.dds.k3003.clients.FachadaLogistica.LogisticaProxy;
 import ar.edu.utn.dds.k3003.clients.FachadaViandas.ViandasProxy;
 import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
-import ar.edu.utn.dds.k3003.facades.dtos.EstadoViandaEnum;
-import ar.edu.utn.dds.k3003.facades.dtos.RetiroDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.RutaDTO;
-import ar.edu.utn.dds.k3003.facades.dtos.ViandaDTO;
+import ar.edu.utn.dds.k3003.facades.dtos.*;
 
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -24,9 +21,12 @@ import java.util.Objects;
 public class MenuOpciones extends BotState {
     SubState subState = SubState.START;
     String QRVianda;
+    String QRViandaARetirar;
     Long colaborador_id;
 
     Integer heladera_Origen;
+
+    Integer heladeraOrigenTraslado;
     FormaDeColaborar forma = new FormaDeColaborar();
     private final FachadaHeladeras fachadaHeladeras= HeladerasProxy.getInstance();
     private final ColaboradoresProxy fachadaColaboradores = ColaboradoresProxy.getInstance();
@@ -58,7 +58,9 @@ public class MenuOpciones extends BotState {
             case IDHELADERAINCIDENCIA -> waitingResponseIDHeladeraIncidencia(userChat,messageText,bot);
             case IDREPARAR -> waitingResponseReparar(userChat,messageText,bot);
             case IDHELADERAVERINCIDENCIAS -> waitingResponseVerIncidencias(userChat,messageText,bot);
-
+            case INICIARTRASLADO -> waitingResponseIniciarTraslado(userChat,messageText,bot);
+            case ITRASLADOHELADERAORIGEN -> waitingResponseIniciarTrasladoHeladeraOrigen(userChat,messageText,bot);
+            case ASIGNARTRASLADO -> waitingResponseAsignarTraslado(userChat, messageText, bot);
             case FORMASCOLABORAR -> waitingResponsePedirFormaColaborar(userChat,messageText,bot);
             case FORMASAGREGADAS -> waitingResponseCambiarFormaColaborar(userChat,messageText,bot);
             case CANTIDADVIANDAS -> waitingResponseCantidadViandas(userChat,messageText,bot);
@@ -364,10 +366,17 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             this.subState=SubState.IDREPARAR;
         }
         case "14" -> {
-            sendMessage.setText("seleccionaste la opcion agregar ruta \n\n Por favor indique el ID de la heladeras Origen y Destino");
+            sendMessage.setText("seleccionaste la opcion agregar ruta \n\n Por favor indique el ID de la heladeras Origen");
             bot.execute(sendMessage);
             this.subState=SubState.AGREGARRUTA;
         }
+
+        case "16" -> {
+            sendMessage.setText("Seleccionaste iniciar traslado \n\n Por favor indique el QRVianda que trasladará");
+            bot.execute(sendMessage);
+            this.subState = SubState.INICIARTRASLADO;
+        }
+
         case "19" -> {
             sendMessage.setText("Seleccionaste la opcion cambiar forma de colaborar \n\n Escriba la forma de colaborar deseada (una sola).");
             bot.execute(sendMessage);
@@ -608,6 +617,7 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         }
     }
 
+
     private void waitingResponseCantidadViandas(Long userChat, String messageText, Bot bot) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
@@ -615,9 +625,25 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         try {
             Integer a = fachadaHeladeras.cantidadViandas(Integer.parseInt(messageText));
 
-            sendMessage.setText("La heladera "+Integer.parseInt(messageText)+" tiene "+a+" viandas.");
+            sendMessage.setText("La heladera " + Integer.parseInt(messageText) + " tiene " + a + " viandas.");
             bot.execute(sendMessage);
-            this.subState=SubState.START;
+            this.subState = SubState.START;
+
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+    }
+    /////////////////////////INICIAR TRASLADO/////////////////////////////////
+    private void waitingResponseIniciarTraslado(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        QRViandaARetirar=messageText; //guardo el qr
+        try {
+            sendMessage.setText("Eligió retirar la vianda con QR: '" + messageText + "' \n Indique la heladera de origen");
+            bot.execute(sendMessage);
+            this.subState=SubState.ITRASLADOHELADERAORIGEN;
 
         } catch (Exception e) {
             sendMessage.setText(e.getMessage());
@@ -633,14 +659,29 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
 
         try {
             var registroDeViandasRetiradas = fachadaHeladeras.registrosDelDia(Integer.parseInt(messageText));
-            sendMessage.setText("La heladera de ID " +Integer.parseInt(messageText)+" Tuvo los siguientes retiros del dia de hoy \n\n"+registroDeViandasRetiradas);
+            sendMessage.setText("La heladera de ID " + Integer.parseInt(messageText) + " Tuvo los siguientes retiros del dia de hoy \n\n" + registroDeViandasRetiradas);
             bot.execute(sendMessage);
-            this.subState=SubState.START;
+            this.subState = SubState.START;
+        } catch (Exception e) {
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat, bot);
+        }
+    }
+    private void waitingResponseIniciarTrasladoHeladeraOrigen(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        heladeraOrigenTraslado = Integer.parseInt(messageText);
+        try{
+            sendMessage.setText("Eligió la heladera de origen: '"+ messageText +"' \n Indique la heladera de destino");
+            bot.execute(sendMessage);
+            this.subState=SubState.ASIGNARTRASLADO;
 
         } catch (Exception e) {
             sendMessage.setText(e.getMessage());
             bot.execute(sendMessage);
             elegirFormaDeColaborar(userChat,bot);
+
 
         }
     }
@@ -677,6 +718,22 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             this.subState=SubState.START;
 
         } catch (Exception e) {
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+
+
+        }
+    }
+    private void waitingResponseAsignarTraslado(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        TrasladoDTO trasladoDTO = new TrasladoDTO(QRViandaARetirar, heladeraOrigenTraslado, Integer.parseInt(messageText));
+        try {
+            sendMessage.setText("Indicó la heladera de destino: '"+ messageText +"' \n se asignará su traslado, use otra opcion para retirarlo.");
+            fachadaLogistica.asignarTraslado(trasladoDTO);
+            bot.execute(sendMessage);
+        } catch (Exception e){
             sendMessage.setText(e.getMessage());
             bot.execute(sendMessage);
             elegirFormaDeColaborar(userChat,bot);
