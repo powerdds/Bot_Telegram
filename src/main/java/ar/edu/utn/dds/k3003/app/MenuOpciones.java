@@ -342,6 +342,22 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             bot.execute(sendMessage);
             this.subState=SubState.IDHELADERAVERINCIDENCIAS;
         }
+        case "9" -> {
+            sendMessage.setText("Seleccionaste la opcion ver retiros del dia de una heladera \n Por favor indique el ID de la heladera:");
+            bot.execute(sendMessage);
+            this.subState=SubState.CANTIDADRETIROS;
+        }
+        case "10" -> {
+            sendMessage.setText("Seleccionaste la opcion suscribirse \n \n Por favor indique el ID de la heladera: ");
+            bot.execute(sendMessage);
+            this.subState=SubState.SUSCRIBIRSE;
+        }
+        case "11" -> {
+            sendMessage.setText("Seleccionaste la opcion desuscribirse\n \n Por favor indique el ID de la heladera: ");
+            bot.execute(sendMessage);
+            this.subState=SubState.DESUSCRIBIRSE;
+        }
+
         case "13" -> {
             sendMessage.setText("Seleccionaste la opcion cerrar Incidencia \n\n Por favor indique el ID de la heladera a la que se le cerrara la incidencia");
             bot.execute(sendMessage);
@@ -656,7 +672,7 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
 
         try {
             fachadaHeladeras.eliminarSuscriptor(Integer.parseInt(messageText), Math.toIntExact(colaborador_id));
-            sendMessage.setText("Se ha suscrito de la heladera "+Integer.parseInt(messageText));
+            sendMessage.setText("Se ha desuscrito de la heladera "+Integer.parseInt(messageText));
             bot.execute(sendMessage);
             this.subState=SubState.START;
 
