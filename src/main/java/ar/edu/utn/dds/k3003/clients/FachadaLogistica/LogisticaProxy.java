@@ -61,10 +61,28 @@ public class LogisticaProxy implements FachadaLogistica {
         }
     }
 
-    public TrasladoDTO buscarXId(Long var1) throws NoSuchElementException
-    {return null;}
+    @Override
+    @SneakyThrows
+    public TrasladoDTO buscarXId(Long idTraslado) throws NoSuchElementException {
+        Response<?> execute = service.traslados(idTraslado).execute();
 
-    public TrasladoDTO asignarTraslado(TrasladoDTO var1) throws TrasladoNoAsignableException{return null;}
+        if(execute.isSuccessful()){
+            return (TrasladoDTO) execute.body();
+        } else {
+            throw new BadRequestResponse("No se encuentra el traslado");
+        }
+    }
+
+    @Override
+    @SneakyThrows
+    public TrasladoDTO asignarTraslado(TrasladoDTO trasladoDTO) throws TrasladoNoAsignableException{
+        Response<TrasladoDTO> execute = service.asignarTraslado(trasladoDTO).execute();
+        if(execute.isSuccessful()){
+            return execute.body();
+        } else {
+            throw new TrasladoNoAsignableException("No es posible asignar el traslado");
+        }
+    }
 
     @Override
     @SneakyThrows
@@ -85,7 +103,26 @@ public class LogisticaProxy implements FachadaLogistica {
 
     public void setViandasProxy(FachadaViandas var1){}
 
-    public void trasladoRetirado(Long var1){}
+    @Override
+    @SneakyThrows
+    public void trasladoRetirado(Long idTraslado){
+    Response<Void> execute = service.retirarTraslado(idTraslado).execute();
+        if(execute.isSuccessful()){
+             execute.body();
+        } else {
+            throw new NoSuchElementException("No se puede retirar el traslado");
+        }
 
-    public void trasladoDepositado(Long var1){}
+    }
+
+    @Override
+    @SneakyThrows
+    public void trasladoDepositado(Long idTraslado){
+        Response<Void> execute = service.depositarTraslado(idTraslado).execute();
+        if(execute.isSuccessful()){
+            execute.body();
+        } else {
+            throw new NoSuchElementException("No se puede depositar el traslado");
+        }
+    }
 }

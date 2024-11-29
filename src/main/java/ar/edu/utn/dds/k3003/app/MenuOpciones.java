@@ -63,6 +63,8 @@ public class MenuOpciones extends BotState {
             case INICIARTRASLADO -> waitingResponseIniciarTraslado(userChat,messageText,bot);
             case ITRASLADOHELADERAORIGEN -> waitingResponseIniciarTrasladoHeladeraOrigen(userChat,messageText,bot);
             case ASIGNARTRASLADO -> waitingResponseAsignarTraslado(userChat, messageText, bot);
+            case RETIRARTRASLADO -> waitingResponseRetirarTraslado(userChat, messageText, bot);
+            case FINALIZARTRASLADO -> waitingResponseFinalizarTraslado(userChat,messageText,bot);
             case FORMASCOLABORAR -> waitingResponsePedirFormaColaborar(userChat,messageText,bot);
             //case FORMASAGREGADAS -> waitingResponseCambiarFormaColaborar(userChat,messageText,bot);
             case CANTIDADVIANDAS -> waitingResponseCantidadViandas(userChat,messageText,bot);
@@ -225,7 +227,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 12 ☞ Recibir informacion de dichos eventos
                 15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 19 ☞ Cambiar forma de colaborar
-                20 ☞ Cerrar Sesion
+                21 ☞ Salir
                 
                 """);
     try {
@@ -259,7 +261,8 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 16 ☞ Iniciar traslado de vianda
                 17 ☞ Finalizar traslado de vianda
                 19 ☞ Cambiar forma de colaborar
-                20 ☞ Cerrar Sesion
+                20 ☞ Retirar traslado
+                21 ☞ Salir
                 
                 """);
         try {
@@ -290,7 +293,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 13 ☞ Cerrar una incidencia (activar heladera)
                 15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 19 ☞ Cambiar forma de colaborar
-                20 ☞ Cerrar Sesion
+                21 ☞ Salir
                 
                 """);
         try {
@@ -323,7 +326,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 18 ☞ Realizar una donacion
                 19 ☞ Cambiar forma de colaborar
-                20 ☞ Cerrar Sesion
+                21 ☞ Salir
                 
                 """);
         try {
@@ -471,7 +474,9 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         }
         case "17" ->{
             if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())) {
-            //agregar lo que se debe hacer.
+                sendMessage.setText("Seleccionaste finalizar traslado \n\n Por favor indique el id del traslado que finalizará");
+                bot.execute(sendMessage);
+                this.subState = SubState.FINALIZARTRASLADO;
             }
             else {
                 sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
@@ -496,7 +501,19 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             this.subState=SubState.FORMASCOLABORAR;
         }
         case "20" -> {
-            sendMessage.setText("Cerrando sesion como Colaborador "+colaborador_id+ "\n\n ");
+            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())) {
+                sendMessage.setText("Seleccionaste retirar traslado \n\n Por favor indique el id del traslado que se retirará");
+                bot.execute(sendMessage);
+                this.subState = SubState.RETIRARTRASLADO;
+            }
+            else {
+                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                bot.execute(sendMessage);
+                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+            }
+        }
+        case "21" -> {
+            sendMessage.setText("Saliendo de la app como Colaborador "+colaborador_id+ "\n\n ");
             bot.execute(sendMessage);
             indicarNroColaborador(userChat,bot);
 
@@ -863,6 +880,32 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             bot.execute(sendMessage);
             elegirFormaDeColaborar(userChat,bot);
 
+        }
+    }
+
+    private void waitingResponseRetirarTraslado(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        try{
+            sendMessage.setText("Indicó que retirará la vianda asignada al traslado de id '"+ messageText);
+            fachadaLogistica.trasladoRetirado(Long.parseLong(messageText));
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+    }
+
+    private void waitingResponseFinalizarTraslado(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        try{
+            sendMessage.setText("Indicó que depositará la vianda asignada al traslado de id '"+ messageText);
+            fachadaLogistica.trasladoDepositado(Long.parseLong(messageText));
+        } catch (Exception e){
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
         }
     }
 }
