@@ -159,8 +159,23 @@ public class HeladerasProxy implements FachadaHeladeras {
 
     @SneakyThrows
     @Override
-    public List<RegistroRetiroDTO> registrosDelDia(Integer heladeraId) {
+    public List<RegistroRetiroDTO> obtenerRetirosDelDia(Integer heladeraId) {
         Response<List<RegistroRetiroDTO>> execute = service.getRetirosDelDia(Long.valueOf(heladeraId)).execute();
+
+        if(execute.isSuccessful()){
+            return execute.body();
+
+        }
+
+        else {
+            throw new NoSuchElementException("No se se encontro la heladera: "+heladeraId);
+        }
+    }
+
+    @SneakyThrows
+    @Override
+    public String obtenerMensajeCapacidad(Integer heladeraId) {
+        Response<String> execute = service.capacidad(Long.valueOf(heladeraId)).execute();
 
         if(execute.isSuccessful()){
             return execute.body();

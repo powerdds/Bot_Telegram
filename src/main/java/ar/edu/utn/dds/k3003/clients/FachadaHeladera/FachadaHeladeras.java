@@ -30,6 +30,7 @@ public interface FachadaHeladeras {
      AlertaHeladeraDTO verIncidencias(Long id_heladera);
      void agregarSuscriptor(Integer id, SuscripcionDTO suscripcionDTO);
      void eliminarSuscriptor(Integer heladeraId, Integer colaboradorId);
-     List<RegistroRetiroDTO> registrosDelDia(Integer heladeraId);
+     List<RegistroRetiroDTO> obtenerRetirosDelDia(Integer heladeraId);
+     String obtenerMensajeCapacidad(Integer heladeraId);
 
 }

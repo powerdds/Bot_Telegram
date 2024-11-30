@@ -34,4 +34,7 @@ public interface HeladerasRetrofitClient {
 
     @DELETE("/heladeras/{heladera_id}/suscribir/{colaborador_id}")
     Call<Void> desuscribirse(@Path("heladera_id") Long heladera, @Path("colaborador_id") Long colaborador_id);
+
+    @GET("/heladeras/{id}/capacidad")
+    Call<String> capacidad(@Path("id") Long heladera);
 }

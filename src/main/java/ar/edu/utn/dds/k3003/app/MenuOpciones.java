@@ -769,8 +769,9 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
 
         try {
             Integer a = fachadaHeladeras.cantidadViandas(Integer.parseInt(messageText));
+            String b = fachadaHeladeras.obtenerMensajeCapacidad(Integer.parseInt(messageText));
 
-            sendMessage.setText("La heladera " + Integer.parseInt(messageText) + " tiene " + a + " viandas.\n\n");
+            sendMessage.setText("La heladera " + Integer.parseInt(messageText) + " tiene " + a + " viandas que tiene capacidad "+ b +".\n\n");
             bot.execute(sendMessage);
             waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
 
@@ -803,7 +804,7 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         sendMessage.setChatId(userChat.toString());
 
         try {
-            var registroDeViandasRetiradas = fachadaHeladeras.registrosDelDia(Integer.parseInt(messageText));
+            var registroDeViandasRetiradas = fachadaHeladeras.obtenerRetirosDelDia(Integer.parseInt(messageText));
             sendMessage.setText("La heladera de ID " + Integer.parseInt(messageText) + " Tuvo los siguientes retiros del dia de hoy \n\n" + registroDeViandasRetiradas);
             bot.execute(sendMessage);
             waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
