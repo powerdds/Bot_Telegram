@@ -12,6 +12,7 @@ import ar.edu.utn.dds.k3003.facades.FachadaLogistica;
 import ar.edu.utn.dds.k3003.facades.FachadaViandas;
 import ar.edu.utn.dds.k3003.facades.dtos.*;
 
+import ar.edu.utn.dds.k3003.utils.ColaboradorChatRepository;
 import ar.edu.utn.dds.k3003.utils.ColaboradorDTO;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -102,10 +103,13 @@ public class MenuOpciones extends BotState {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
         colaborador_id=Long.parseLong(messageText);
+
         try {
             fachadaColaboradores.buscarXId(colaborador_id);
+            ColaboradorChatRepository repository = new ColaboradorChatRepository();
+            repository.saveOrUpdate(colaborador_id, userChat.toString());
             //ver si es un colaborador existente
-            sendMessage.setText("Bienvenido Colaborador "+colaborador_id+ " =D \n");
+            sendMessage.setText("Bienvenido Colaborador "+colaborador_id+ " 😄 \n");
             bot.execute(sendMessage);
             elegirFormaDeColaborar(userChat,bot);
         } catch (Exception e){
@@ -538,7 +542,7 @@ public class MenuOpciones extends BotState {
         sendMessage.setChatId(userChat.toString());
         try {
             var respuesta = fachadaColaboradores.buscarXId(colaborador_id);
-            var puntos = 0L;//fachadaColaboradores.puntos(colaborador_id,11,2024); //DESCOMENTAR
+            var puntos = fachadaColaboradores.puntos(colaborador_id,11,2024);
 
             //var respuesta = fachadaHeladeras.verIncidencias(Long.parseLong(messageText));
             //sendMessage.setText(respuesta.getAlertas().toString());
