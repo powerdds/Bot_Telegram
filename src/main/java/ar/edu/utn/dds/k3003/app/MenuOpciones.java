@@ -768,10 +768,10 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         sendMessage.setChatId(userChat.toString());
 
         try {
-            Integer a = fachadaHeladeras.cantidadViandas(Integer.parseInt(messageText));
+            //Integer a = fachadaHeladeras.cantidadViandas(Integer.parseInt(messageText));
             String b = fachadaHeladeras.obtenerMensajeCapacidad(Integer.parseInt(messageText));
 
-            sendMessage.setText("La heladera " + Integer.parseInt(messageText) + " tiene " + a + " viandas que tiene capacidad "+ b +".\n\n");
+            sendMessage.setText(b);
             bot.execute(sendMessage);
             waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
 
