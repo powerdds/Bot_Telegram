@@ -230,8 +230,6 @@ public class MenuOpciones extends BotState {
                 9  ☞ Ver los retiros del dia de una heladera
                 10 ☞ Suscribirse a los eventos de una heladera
                 11 ☞ Desuscribirse
-                12 ☞ Recibir informacion de dichos eventos
-                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 19 ☞ Cambiar forma de colaborar
                 21 ☞ Salir
                 
@@ -261,9 +259,7 @@ public class MenuOpciones extends BotState {
                 9  ☞ Ver los retiros del dia de una heladera
                 10 ☞ Suscribirse a los eventos de una heladera
                 11 ☞ Desuscribirse
-                12 ☞ Recibir informacion de dichos eventos
                 14 ☞ Dar de alta una ruta
-                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 16 ☞ Iniciar traslado de vianda
                 17 ☞ Finalizar traslado de vianda
                 19 ☞ Cambiar forma de colaborar
@@ -295,9 +291,7 @@ public class MenuOpciones extends BotState {
                 9  ☞ Ver los retiros del dia de una heladera
                 10 ☞ Suscribirse a los eventos de una heladera
                 11 ☞ Desuscribirse
-                12 ☞ Recibir informacion de dichos eventos
                 13 ☞ Cerrar una incidencia (activar heladera)
-                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 19 ☞ Cambiar forma de colaborar
                 21 ☞ Salir
                 
@@ -327,9 +321,7 @@ public class MenuOpciones extends BotState {
                 9  ☞ Ver los retiros del dia de una heladera
                 10 ☞ Suscribirse a los eventos de una heladera
                 11 ☞ Desuscribirse
-                12 ☞ Recibir informacion de dichos eventos
                 14 ☞ Dar de alta una ruta
-                15 ☞ Recibir mensaje que un traslado fue asignado al usuario
                 18 ☞ Realizar una donacion
                 19 ☞ Cambiar forma de colaborar
                 21 ☞ Salir
@@ -435,9 +427,6 @@ public class MenuOpciones extends BotState {
                 bot.execute(sendMessage);
                 this.subState=SubState.DESUSCRIBIRSE;
             }
-            case "12" -> {
-                ///todo
-            }
 
             case "13" -> {
                 if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) ){
@@ -463,9 +452,6 @@ public class MenuOpciones extends BotState {
                     bot.execute(sendMessage);
                     waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
                 }
-            }
-            case "15" -> {
-                //TODO
             }
 
             case "16" -> {
@@ -884,8 +870,8 @@ public class MenuOpciones extends BotState {
         TrasladoDTO trasladoDTO = new TrasladoDTO(QRViandaARetirar, heladeraOrigenTraslado, Integer.parseInt(messageText));
         try {
             sendMessage.setText("Indicó la heladera de destino: '"+ messageText +"' \n se asignará su traslado, use otra opcion para retirarlo.");
-            fachadaLogistica.asignarTraslado(trasladoDTO);
             bot.execute(sendMessage);
+            fachadaLogistica.asignarTraslado(trasladoDTO);
             waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
         } catch (Exception e){
             sendMessage.setText(e.getMessage());
