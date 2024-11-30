@@ -5,6 +5,7 @@ import ar.edu.utn.dds.k3003.clients.FachadaColaboradores.FormaDeColaborar;
 import ar.edu.utn.dds.k3003.clients.FachadaColaboradores.FormaDeColaborarEnum;
 import ar.edu.utn.dds.k3003.clients.FachadaHeladera.FachadaHeladeras;
 import ar.edu.utn.dds.k3003.clients.FachadaHeladera.HeladerasProxy;
+import ar.edu.utn.dds.k3003.clients.FachadaHeladera.MensajeCapacidadDTO;
 import ar.edu.utn.dds.k3003.clients.FachadaHeladera.SuscripcionDTO;
 import ar.edu.utn.dds.k3003.clients.FachadaLogistica.LogisticaProxy;
 import ar.edu.utn.dds.k3003.clients.FachadaViandas.ViandasProxy;
@@ -775,9 +776,9 @@ public class MenuOpciones extends BotState {
 
         try {
             // Integer a = fachadaHeladeras.cantidadViandas(Integer.parseInt(messageText));
-            String b = fachadaHeladeras.obtenerMensajeCapacidad(Integer.parseInt(messageText));
+            MensajeCapacidadDTO b = fachadaHeladeras.obtenerMensajeCapacidad(Integer.parseInt(messageText));
 
-            sendMessage.setText(b);
+            sendMessage.setText(b.getMensaje());
             bot.execute(sendMessage);
             waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
 

@@ -174,8 +174,8 @@ public class HeladerasProxy implements FachadaHeladeras {
 
     @SneakyThrows
     @Override
-    public String obtenerMensajeCapacidad(Integer heladeraId) {
-        Response<String> execute = service.capacidad(heladeraId).execute();
+    public MensajeCapacidadDTO obtenerMensajeCapacidad(Integer heladeraId) {
+        Response<MensajeCapacidadDTO> execute = service.capacidad(heladeraId).execute();
 
         if(execute.isSuccessful()){
             return execute.body();

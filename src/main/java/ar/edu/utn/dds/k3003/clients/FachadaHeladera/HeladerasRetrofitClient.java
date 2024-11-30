@@ -36,5 +36,5 @@ public interface HeladerasRetrofitClient {
     Call<Void> desuscribirse(@Path("heladera_id") Long heladera, @Path("colaborador_id") Long colaborador_id);
 
     @GET("/heladeras/{id}/capacidad")
-    Call<String> capacidad(@Path("id") Integer heladera);
+    Call<MensajeCapacidadDTO> capacidad(@Path("id") Integer heladera);
 }

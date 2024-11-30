@@ -31,6 +31,6 @@ public interface FachadaHeladeras {
      void agregarSuscriptor(Integer id, SuscripcionDTO suscripcionDTO);
      void eliminarSuscriptor(Integer heladeraId, Integer colaboradorId);
      List<RegistroRetiroDTO> obtenerRetirosDelDia(Integer heladeraId);
-     String obtenerMensajeCapacidad(Integer heladeraId);
+      MensajeCapacidadDTO obtenerMensajeCapacidad(Integer heladeraId);
 
 }
