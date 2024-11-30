@@ -115,7 +115,7 @@ public class MenuOpciones extends BotState {
         }
     }
 
-/////////////////FORMA DE COLABORAR////////////////////////////////
+    /////////////////FORMA DE COLABORAR////////////////////////////////
     private void elegirFormaDeColaborar(Long user, Bot bot) {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
@@ -148,24 +148,24 @@ public class MenuOpciones extends BotState {
         switch (messageText) {
             case "1" -> {
 
-               if( colaborador.getFormas().contains(FormaDeColaborarEnum.DONADORVIANDA)){
+                if( colaborador.getFormas().contains(FormaDeColaborarEnum.DONADORVIANDA)){
 
-                this.subState=SubState.WAITING_RESPONSE_OPTION;
-                formaColaborarElegida=messageText;
-                nombreFormaColaborarElegida="DONADORVIANDA";
-                menuOpcionesDonadorVianda(userChat,bot);}
-               else {
-                   sendMessage.setText("No contiene este tipo de forma de colaborar");
-                   bot.execute(sendMessage);
-                   elegirFormaDeColaborar(userChat,bot);
-               }
+                    this.subState=SubState.WAITING_RESPONSE_OPTION;
+                    formaColaborarElegida=messageText;
+                    nombreFormaColaborarElegida="DONADORVIANDA";
+                    menuOpcionesDonadorVianda(userChat,bot);}
+                else {
+                    sendMessage.setText("No contiene este tipo de forma de colaborar");
+                    bot.execute(sendMessage);
+                    elegirFormaDeColaborar(userChat,bot);
+                }
             }
             case "2" -> {
                 if( colaborador.getFormas().contains(FormaDeColaborarEnum.TRANSPORTADOR)){
-                this.subState=SubState.WAITING_RESPONSE_OPTION;
-                formaColaborarElegida=messageText;
-                nombreFormaColaborarElegida="TRANSPORTADOR";
-                menuOpcionesTransportador(userChat,bot);}
+                    this.subState=SubState.WAITING_RESPONSE_OPTION;
+                    formaColaborarElegida=messageText;
+                    nombreFormaColaborarElegida="TRANSPORTADOR";
+                    menuOpcionesTransportador(userChat,bot);}
                 else {
                     sendMessage.setText("No contiene este tipo de forma de colaborar");
                     bot.execute(sendMessage);
@@ -174,10 +174,10 @@ public class MenuOpciones extends BotState {
             }
             case "3" -> {
                 if( colaborador.getFormas().contains(FormaDeColaborarEnum.TECNICO)){
-                this.subState=SubState.WAITING_RESPONSE_OPTION;
-                formaColaborarElegida=messageText;
-                nombreFormaColaborarElegida="TECNICO";
-                menuOpcionesTecnico(userChat,bot);}
+                    this.subState=SubState.WAITING_RESPONSE_OPTION;
+                    formaColaborarElegida=messageText;
+                    nombreFormaColaborarElegida="TECNICO";
+                    menuOpcionesTecnico(userChat,bot);}
                 else {
                     sendMessage.setText("No contiene este tipo de forma de colaborar");
                     bot.execute(sendMessage);
@@ -186,10 +186,10 @@ public class MenuOpciones extends BotState {
             }
             case "4" -> {
                 if( colaborador.getFormas().contains(FormaDeColaborarEnum.DONADORDINERO)){
-                this.subState=SubState.WAITING_RESPONSE_OPTION;
-                formaColaborarElegida=messageText;
-                nombreFormaColaborarElegida="DONADORDINERO";
-                menuOpcionesDonadorDinero(userChat,bot);}
+                    this.subState=SubState.WAITING_RESPONSE_OPTION;
+                    formaColaborarElegida=messageText;
+                    nombreFormaColaborarElegida="DONADORDINERO";
+                    menuOpcionesDonadorDinero(userChat,bot);}
                 else {
                     sendMessage.setText("No contiene este tipo de forma de colaborar");
                     bot.execute(sendMessage);
@@ -206,11 +206,11 @@ public class MenuOpciones extends BotState {
         }
 
     }
-////////////////////////MENUS///////////////////////////////////
-private void menuOpcionesDonadorVianda(Long user, Bot bot) {
-    SendMessage response = new SendMessage();
-    response.setChatId(user.toString());
-    response.setText("""
+    ////////////////////////MENUS///////////////////////////////////
+    private void menuOpcionesDonadorVianda(Long user, Bot bot) {
+        SendMessage response = new SendMessage();
+        response.setChatId(user.toString());
+        response.setText("""
                 Selecciono la forma de colaborar "Donador de vianda"
                 
                 Escriba el número de la opción deseada:
@@ -231,14 +231,14 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 21 ☞ Salir
                 
                 """);
-    try {
-        bot.execute(response);
-    } catch (TelegramApiException e) {
-        e.printStackTrace();
-    } catch (Exception e) {
-        throw new RuntimeException(e);
+        try {
+            bot.execute(response);
+        } catch (TelegramApiException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
-}
     private void menuOpcionesTransportador(Long user, Bot bot) {
         SendMessage response = new SendMessage();
         response.setChatId(user.toString());
@@ -268,7 +268,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 """);
         try {
             bot.execute(response);
-            } catch (TelegramApiException e) {
+        } catch (TelegramApiException e) {
             e.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -299,7 +299,7 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
                 """);
         try {
             bot.execute(response);
-         } catch (TelegramApiException e) {
+        } catch (TelegramApiException e) {
             e.printStackTrace();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -339,195 +339,197 @@ private void menuOpcionesDonadorVianda(Long user, Bot bot) {
         }
     }
 
-/////////////////ESPERANDO RESPUESTA AL MENU/////////////////////////////
-private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) throws Exception{
-    SendMessage sendMessage = new SendMessage();
-    sendMessage.setChatId(userChat.toString());
+    /////////////////ESPERANDO RESPUESTA AL MENU/////////////////////////////
+    private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) throws Exception{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
 
-    switch (messageText) {
-        case "1" -> {
-            sendMessage.setText("Seleccionaste la opcion ver datos, espere un momento");
-            bot.execute(sendMessage);
-            //this.subState = SubState.MOSTRARDATOS;
-            waitingResponseDatosColaboradorId(userChat,bot);
-        }
-        case "2" -> {
-            sendMessage.setText("Seleccionaste la opcion elegir Menu de colaborador \n");
-
-            bot.execute(sendMessage);
-            elegirFormaDeColaborar(userChat,bot);
-        }
-        case "3" -> {
-            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORVIANDA.name())){
-                sendMessage.setText("Seleccionaste la opcion crear vianda. \n \n Por favor indicar el QR de la vianda");
+        switch (messageText) {
+            case "1" -> {
+                sendMessage.setText("Seleccionaste la opcion ver datos, espere un momento");
                 bot.execute(sendMessage);
-                this.subState = SubState.CREARVIANDA;
+                //this.subState = SubState.MOSTRARDATOS;
+                waitingResponseDatosColaboradorId(userChat,bot);
             }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
+            case "2" -> {
+                sendMessage.setText("Seleccionaste la opcion elegir Menu de colaborador \n");
 
-
-        }
-        case "4" -> {
-            if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) &&
-                    !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
-
-                sendMessage.setText("Seleccionaste la opcion depositar vianda \n Por favor, escribe el qr de la vianda que deseas depositar.\"");
-                bot.execute(sendMessage);
-                this.subState = SubState.QRVIANDADEPOSITAR;
-            }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
-
-        }
-        case "5" -> {
-            if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) &&
-                    !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
-
-                sendMessage.setText("Seleccionaste la opcion retirar vianda \n Por favor, escribe el qr de la vianda que deseas retirar.");
-            bot.execute(sendMessage);
-            this.subState=SubState.QRVIANDARETIRAR;
-            }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
-        }
-        case "6" -> {
-            sendMessage.setText("Seleccionaste la opcion crear Incidencia \n \n Por favor indique el ID de la heladera a la que le hara la incidencia");
-            bot.execute(sendMessage);
-            this.subState=SubState.IDHELADERAINCIDENCIA;
-        }
-        case "7" -> {
-            sendMessage.setText("Seleccionaste la opcion ver Incidencias de una heladera \n \n Por favor indique el ID de la heladera ");
-            bot.execute(sendMessage);
-            this.subState=SubState.IDHELADERAVERINCIDENCIAS;
-        }
-        case "8" -> {
-            //TODO
-        }
-        case "9" -> {
-            sendMessage.setText("Seleccionaste la opcion ver retiros del dia de una heladera \n Por favor indique el ID de la heladera:");
-            bot.execute(sendMessage);
-            this.subState=SubState.CANTIDADRETIROS;
-        }
-        case "10" -> {
-            sendMessage.setText("Seleccionaste la opcion suscribirse \n \n Por favor indique el ID de la heladera: ");
-            bot.execute(sendMessage);
-            this.subState=SubState.SUSCRIBIRSE;
-        }
-        case "11" -> {
-            sendMessage.setText("Seleccionaste la opcion desuscribirse\n \n Por favor indique el ID de la heladera: ");
-            bot.execute(sendMessage);
-            this.subState=SubState.DESUSCRIBIRSE;
-        }
-        case "12" -> {
-            ///todo
-        }
-
-        case "13" -> {
-            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) ){
-
-            sendMessage.setText("Seleccionaste la opcion cerrar Incidencia \n\n Por favor indique el ID de la heladera a la que se le cerrara la incidencia");
-            bot.execute(sendMessage);
-            this.subState=SubState.IDREPARAR;}
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
-        }
-        case "14" -> {
-            if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORVIANDA.name()) &&
-                !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name())){
-                sendMessage.setText("seleccionaste la opcion agregar ruta \n\n Por favor indique el ID de la heladeras Origen");
-                bot.execute(sendMessage);
-                this.subState = SubState.AGREGARRUTA;
-            }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
-        }
-        case "15" -> {
-            //TODO
-        }
-
-        case "16" -> {
-            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())){
-                sendMessage.setText("Seleccionaste iniciar traslado \n\n Por favor indique el QRVianda que trasladará");
-                bot.execute(sendMessage);
-                this.subState = SubState.INICIARTRASLADO;
-            }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
                 bot.execute(sendMessage);
                 elegirFormaDeColaborar(userChat,bot);
             }
-        }
-        case "17" ->{
-            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())) {
-                sendMessage.setText("Seleccionaste finalizar traslado \n\n Por favor indique el id del traslado que finalizará");
-                bot.execute(sendMessage);
-                this.subState = SubState.FINALIZARTRASLADO;
-            }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
-        }
-        case "18" -> {
-            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
-                sendMessage.setText("Seleccionaste realizar una donacion \n\n Por favor indique la cantidad de dinero a donar");
-                bot.execute(sendMessage);
-                this.subState = SubState.REALIZARDONACION;
-            }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
-        }
+            case "3" -> {
+                if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORVIANDA.name())){
+                    sendMessage.setText("Seleccionaste la opcion crear vianda. \n \n Por favor indicar el QR de la vianda");
+                    bot.execute(sendMessage);
+                    this.subState = SubState.CREARVIANDA;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
 
-        case "19" -> {
-            sendMessage.setText("Seleccionaste la opcion cambiar forma de colaborar \n\n Escriba la forma de colaborar deseada (una sola).");
-            bot.execute(sendMessage);
-            this.subState=SubState.FORMASCOLABORAR;
-        }
-        case "20" -> {
-            if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())) {
-                sendMessage.setText("Seleccionaste retirar traslado \n\n Por favor indique el id del traslado que se retirará");
-                bot.execute(sendMessage);
-                this.subState = SubState.RETIRARTRASLADO;
-            }
-            else {
-                sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
-                bot.execute(sendMessage);
-                waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
-            }
-        }
-        case "21" -> {
-            sendMessage.setText("Saliendo de la app como Colaborador "+colaborador_id+ "\n\n ");
-            bot.execute(sendMessage);
-            indicarNroColaborador(userChat,bot);
 
-        }
-        default -> {
-            sendMessage.setText("Seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente las formas de colaborar");
-            bot.execute(sendMessage);
-            this.subState=SubState.START;
+            }
+            case "4" -> {
+                if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) &&
+                        !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
+
+                    sendMessage.setText("Seleccionaste la opcion depositar vianda \n Por favor, escribe el qr de la vianda que deseas depositar.\"");
+                    bot.execute(sendMessage);
+                    this.subState = SubState.QRVIANDADEPOSITAR;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
+
+            }
+            case "5" -> {
+                if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) &&
+                        !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
+
+                    sendMessage.setText("Seleccionaste la opcion retirar vianda \n Por favor, escribe el qr de la vianda que deseas retirar.");
+                    bot.execute(sendMessage);
+                    this.subState=SubState.QRVIANDARETIRAR;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
+            }
+            case "6" -> {
+                sendMessage.setText("Seleccionaste la opcion crear Incidencia \n \n Por favor indique el ID de la heladera a la que le hara la incidencia");
+                bot.execute(sendMessage);
+                this.subState=SubState.IDHELADERAINCIDENCIA;
+            }
+            case "7" -> {
+                sendMessage.setText("Seleccionaste la opcion ver Incidencias de una heladera \n \n Por favor indique el ID de la heladera ");
+                bot.execute(sendMessage);
+                this.subState=SubState.IDHELADERAVERINCIDENCIAS;
+            }
+            case "8" -> {
+                sendMessage.setText("Seleccionaste la opcion Ver la ocupacion de las viandas en una heladera  \n \n Por favor indique el ID de la heladera ");
+                bot.execute(sendMessage);
+                this.subState=SubState.CANTIDADVIANDAS;
+            }
+            case "9" -> {
+                sendMessage.setText("Seleccionaste la opcion ver retiros del dia de una heladera \n Por favor indique el ID de la heladera:");
+                bot.execute(sendMessage);
+                this.subState=SubState.CANTIDADRETIROS;
+            }
+            case "10" -> {
+                sendMessage.setText("Seleccionaste la opcion suscribirse \n \n Por favor indique el ID de la heladera: ");
+                bot.execute(sendMessage);
+                this.subState=SubState.SUSCRIBIRSE;
+            }
+            case "11" -> {
+                sendMessage.setText("Seleccionaste la opcion desuscribirse\n \n Por favor indique el ID de la heladera: ");
+                bot.execute(sendMessage);
+                this.subState=SubState.DESUSCRIBIRSE;
+            }
+            case "12" -> {
+                ///todo
+            }
+
+            case "13" -> {
+                if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name()) ){
+
+                    sendMessage.setText("Seleccionaste la opcion cerrar Incidencia \n\n Por favor indique el ID de la heladera a la que se le cerrara la incidencia");
+                    bot.execute(sendMessage);
+                    this.subState=SubState.IDREPARAR;}
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
+            }
+            case "14" -> {
+                if(!nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORVIANDA.name()) &&
+                        !nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TECNICO.name())){
+                    sendMessage.setText("seleccionaste la opcion agregar ruta \n\n Por favor indique el ID de la heladeras Origen");
+                    bot.execute(sendMessage);
+                    this.subState = SubState.AGREGARRUTA;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
+            }
+            case "15" -> {
+                //TODO
+            }
+
+            case "16" -> {
+                if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())){
+                    sendMessage.setText("Seleccionaste iniciar traslado \n\n Por favor indique el QRVianda que trasladará");
+                    bot.execute(sendMessage);
+                    this.subState = SubState.INICIARTRASLADO;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    elegirFormaDeColaborar(userChat,bot);
+                }
+            }
+            case "17" ->{
+                if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())) {
+                    sendMessage.setText("Seleccionaste finalizar traslado \n\n Por favor indique el id del traslado que finalizará");
+                    bot.execute(sendMessage);
+                    this.subState = SubState.FINALIZARTRASLADO;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
+            }
+            case "18" -> {
+                if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.DONADORDINERO.name())){
+                    sendMessage.setText("Seleccionaste realizar una donacion \n\n Por favor indique la cantidad de dinero a donar");
+                    bot.execute(sendMessage);
+                    this.subState = SubState.REALIZARDONACION;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
+            }
+
+            case "19" -> {
+                sendMessage.setText("Seleccionaste la opcion cambiar forma de colaborar \n\n Escriba la forma de colaborar deseada (una sola).");
+                bot.execute(sendMessage);
+                this.subState=SubState.FORMASCOLABORAR;
+            }
+            case "20" -> {
+                if(nombreFormaColaborarElegida.equals(FormaDeColaborarEnum.TRANSPORTADOR.name())) {
+                    sendMessage.setText("Seleccionaste retirar traslado \n\n Por favor indique el id del traslado que se retirará");
+                    bot.execute(sendMessage);
+                    this.subState = SubState.RETIRARTRASLADO;
+                }
+                else {
+                    sendMessage.setText("No puede seleccionar esta opcion ya que es un "+nombreFormaColaborarElegida);
+                    bot.execute(sendMessage);
+                    waitingResponseFormColaborar(userChat,formaColaborarElegida,bot);
+                }
+            }
+            case "21" -> {
+                sendMessage.setText("Saliendo de la app como Colaborador "+colaborador_id+ "\n\n ");
+                bot.execute(sendMessage);
+                indicarNroColaborador(userChat,bot);
+
+            }
+            default -> {
+                sendMessage.setText("Seleccionaste una opcion incorrecta, apreta una tecla para ver nuevamente las formas de colaborar");
+                bot.execute(sendMessage);
+                this.subState=SubState.START;
+            }
         }
     }
-}
 
     //////////////////VER INFO COLABORADOR ///////////////////////////
     // DESCOMENTAR PUNTOS
@@ -609,7 +611,7 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
     }
 
 
-   ///////////////////CREAR VIANDA/////////////////////////
+    ///////////////////CREAR VIANDA/////////////////////////
 
     private void waitingResponseCrearVianda(Long userChat, String messageText, Bot bot) throws Exception {
         SendMessage sendMessage = new SendMessage();
@@ -629,7 +631,7 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         }
 
     }
-///////////////////////CREARINCIDENCIA///////////////////////////////////
+    ///////////////////////CREARINCIDENCIA///////////////////////////////////
     private void waitingResponseIDHeladeraIncidencia(Long userChat, String messageText, Bot bot) throws TelegramApiException {
         SendMessage sendMessage = new SendMessage();
         sendMessage.setChatId(userChat.toString());
@@ -683,32 +685,32 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         }
     }
 
-     ////////////////CAMBIAR FORMAS/////////////////
-     private void waitingResponsePedirFormaColaborar(Long userChat, String messageText, Bot bot) throws TelegramApiException{
-         SendMessage sendMessage = new SendMessage();
-         sendMessage.setChatId(userChat.toString());
-         try{
-             if (Objects.equals(messageText, "0")){
-                 sendMessage.setText("Se cambiaran las formas de colaborar");
-                 bot.execute(sendMessage);
-                 fachadaColaboradores.modificar(colaborador_id,forma);
-                 sendMessage.setText("Se cambiaron exitosamente las formas de colaborar \n \n");
-                 bot.execute(sendMessage);
-                 forma = new FormaDeColaborar();
-                 elegirFormaDeColaborar(userChat,bot);
-             }
+    ////////////////CAMBIAR FORMAS/////////////////
+    private void waitingResponsePedirFormaColaborar(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        try{
+            if (Objects.equals(messageText, "0")){
+                sendMessage.setText("Se cambiaran las formas de colaborar");
+                bot.execute(sendMessage);
+                fachadaColaboradores.modificar(colaborador_id,forma);
+                sendMessage.setText("Se cambiaron exitosamente las formas de colaborar \n \n");
+                bot.execute(sendMessage);
+                forma = new FormaDeColaborar();
+                elegirFormaDeColaborar(userChat,bot);
+            }
             else {
-                 forma.getFormas().add(FormaDeColaborarEnum.valueOf(messageText));
-                 sendMessage.setText("Agregue la siguiente forma de colaborar o ingrese '0' para terminar");
-                 bot.execute(sendMessage);
-                 this.subState=SubState.FORMASCOLABORAR;
-             }
-         } catch (Exception e) {
-             sendMessage.setText(e.getMessage());
-             bot.execute(sendMessage);
-             elegirFormaDeColaborar(userChat,bot);
-         }
-     }
+                forma.getFormas().add(FormaDeColaborarEnum.valueOf(messageText));
+                sendMessage.setText("Agregue la siguiente forma de colaborar o ingrese '0' para terminar");
+                bot.execute(sendMessage);
+                this.subState=SubState.FORMASCOLABORAR;
+            }
+        } catch (Exception e) {
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
+        }
+    }
      /*
     private void waitingResponseCambiarFormaColaborar(Long userChat, String messageText, Bot bot) throws TelegramApiException{
         SendMessage sendMessage = new SendMessage();
@@ -727,22 +729,22 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
     }*/
 
     /////////////////////////AGREGAR RUTAS/////////////////////////////////
-   private void waitingResponseAgregarRutaHeladeraOrigen(Long userChat, String messageText, Bot bot) throws TelegramApiException{
-       SendMessage sendMessage = new SendMessage();
-       sendMessage.setChatId(userChat.toString());
-       heladera_Origen = Integer.parseInt(messageText);
-       try {
-           sendMessage.setText("Se indico la heladera de Origen de id "+heladera_Origen+" correctamente \n Ahora envie la heladera destino");
-           bot.execute(sendMessage);
-           this.subState=SubState.IDHELADERADESTINO;
+    private void waitingResponseAgregarRutaHeladeraOrigen(Long userChat, String messageText, Bot bot) throws TelegramApiException{
+        SendMessage sendMessage = new SendMessage();
+        sendMessage.setChatId(userChat.toString());
+        heladera_Origen = Integer.parseInt(messageText);
+        try {
+            sendMessage.setText("Se indico la heladera de Origen de id "+heladera_Origen+" correctamente \n Ahora envie la heladera destino");
+            bot.execute(sendMessage);
+            this.subState=SubState.IDHELADERADESTINO;
 
-       } catch (Exception e) {
-           sendMessage.setText(e.getMessage());
-           bot.execute(sendMessage);
-           elegirFormaDeColaborar(userChat,bot);
+        } catch (Exception e) {
+            sendMessage.setText(e.getMessage());
+            bot.execute(sendMessage);
+            elegirFormaDeColaborar(userChat,bot);
 
-       }
-   }
+        }
+    }
 
     private void waitingResponseAgregarRuta(Long userChat, String messageText, Bot bot) throws TelegramApiException{
         SendMessage sendMessage = new SendMessage();
@@ -768,7 +770,7 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
         sendMessage.setChatId(userChat.toString());
 
         try {
-            //Integer a = fachadaHeladeras.cantidadViandas(Integer.parseInt(messageText));
+            // Integer a = fachadaHeladeras.cantidadViandas(Integer.parseInt(messageText));
             String b = fachadaHeladeras.obtenerMensajeCapacidad(Integer.parseInt(messageText));
 
             sendMessage.setText(b);
@@ -933,5 +935,5 @@ private void waitingResponseOpciones(Long userChat,String messageText, Bot bot) 
             bot.execute(sendMessage);
             elegirFormaDeColaborar(userChat,bot);
         }
-        }
     }
+}

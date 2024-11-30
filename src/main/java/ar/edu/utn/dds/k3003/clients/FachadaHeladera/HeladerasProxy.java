@@ -95,23 +95,23 @@ public class HeladerasProxy implements FachadaHeladeras {
     }
     @SneakyThrows
     public RespuestaDTO crearIncidencia(Long id_heladera){
-    Response<RespuestaDTO> execute = service.reportarFalla(id_heladera).execute();
+        Response<RespuestaDTO> execute = service.reportarFalla(id_heladera).execute();
 
-    if(execute.isSuccessful()){
-      return  execute.body();
+        if(execute.isSuccessful()){
+            return  execute.body();
 
+        }
+
+        else {
+            throw new NoSuchElementException("No se pudo crear la Incidencia para la heladera ID: "+id_heladera);
+        }
     }
-
-   else {
-        throw new NoSuchElementException("No se pudo crear la Incidencia para la heladera ID: "+id_heladera);
-    }
-}
     @SneakyThrows
     public void repararIncidente(Long id_heladera){
         Response<Void> execute = service.reparar(id_heladera).execute();
 
         if(execute.isSuccessful()){
-          execute.body();
+            execute.body();
 
         }
 
@@ -175,7 +175,7 @@ public class HeladerasProxy implements FachadaHeladeras {
     @SneakyThrows
     @Override
     public String obtenerMensajeCapacidad(Integer heladeraId) {
-        Response<String> execute = service.capacidad(Long.valueOf(heladeraId)).execute();
+        Response<String> execute = service.capacidad(heladeraId).execute();
 
         if(execute.isSuccessful()){
             return execute.body();
